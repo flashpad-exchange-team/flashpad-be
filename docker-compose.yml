@@ -7,9 +7,9 @@ services:
     volumes:
       - ./database:/data
     ports:
-      - 6379:6379
+      - 6380:6380
     expose:
-      - 6379
+      - 6380
     networks:
       - arthur-network
     restart: always

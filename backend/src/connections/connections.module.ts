@@ -5,9 +5,6 @@ import { StakingRedisService } from './redis/staking.redis.provider';
 @Module({
   imports: [EventEmitterModule.forRoot()],
   providers: [StakingRedisService],
-  exports: [
-    StakingRedisService,
-    EventEmitterModule,
-  ],
+  exports: [StakingRedisService, EventEmitterModule],
 })
 export class ConnectionsModule {}

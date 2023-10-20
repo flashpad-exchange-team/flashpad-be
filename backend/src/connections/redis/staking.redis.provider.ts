@@ -10,7 +10,7 @@ export class StakingRedisService extends RedisService {
       port: config.ENV.REDIS_STAKING_PORT,
       password: config.ENV.REDIS_STAKING_PASS,
       family: config.ENV.REDIS_STAKING_FAMILY,
-      db: config.ENV.REDIS_STAKING_DB
-    })
+      db: config.ENV.REDIS_STAKING_DB,
+    });
   }
 }
