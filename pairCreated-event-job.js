@@ -6,7 +6,9 @@ const { abi: PAIR_FACTORY_ABI } = require("./ArthurFactory.json");
 
 const RPC_URL = process.env.RPC_URL || "https://rpc.goerli.linea.build";
 
-const PAIR_FACTORY_ADDRESS = process.env.PAIR_FACTORY_ADDRESS || "0xc65a8b166c2b6C386ee0B6CD7dFd3e502793B2c4";
+const PAIR_FACTORY_ADDRESS =
+	process.env.PAIR_FACTORY_ADDRESS ||
+	"0xc65a8b166c2b6C386ee0B6CD7dFd3e502793B2c4";
 
 const provider = new ethers.JsonRpcProvider(RPC_URL);
 
@@ -29,14 +31,9 @@ const listPairAddresses = [
 ];
 
 const crawlPairCreatedEvents = async () => {
-	for (const addr of listPairAddresses) {
-		createCronJob("*/5 * * * * *", addr + '');
-	}
-
 	const latestBlock = await provider.getBlock("latest"); // Get the latest block number
 	const latestBlockNum = latestBlock.number;
 	const historicalBlockNum = latestBlockNum - 1000;
-
 
 	const eventName = "PairCreated";
 	const events = await pairFactoryContract.queryFilter(
@@ -46,30 +43,36 @@ const crawlPairCreatedEvents = async () => {
 	);
 
 	for (const event of events) {
-		const [token0,
-			token1,
-			pair,
-			length,
-		] = event.args;
-		console.log(`PairFactory contract ${PAIR_FACTORY_ADDRESS} - event PairCreated:`, {
-			token0,
-			token1,
-			pair,
-			length,
-		});
-		listPairAddresses.push(pair + '');
-		fs.writeFileSync("list-pair-addresses.json", JSON.stringify(listPairAddresses));
-		createCronJob("*/5 * * * * *", pair + '');
+		const [token0, token1, pair, length] = event.args;
+		console.log(
+			`PairFactory contract ${PAIR_FACTORY_ADDRESS} - event PairCreated:`,
+			{
+				token0,
+				token1,
+				pair,
+				length,
+			}
+		);
+		listPairAddresses.push(pair + "");
+		fs.writeFileSync(
+			"list-pair-addresses.json",
+			JSON.stringify(listPairAddresses)
+		);
+		createCronJob("*/5 * * * * *", pair + "");
 	}
 };
 
 const startCronJobs = () => {
-		try {
-			cron.schedule("*/5 * * * * *", crawlPairCreatedEvents).start();
-		} catch (error) {
-			console.log(error)
+	try {
+		cron.schedule("*/5 * * * * *", crawlPairCreatedEvents).start();
+
+		for (const addr of listPairAddresses) {
+			createCronJob("*/5 * * * * *", addr + "");
 		}
-}
+	} catch (error) {
+		console.log(error);
+	}
+};
 
 module.exports = {
 	startCronJobs,
