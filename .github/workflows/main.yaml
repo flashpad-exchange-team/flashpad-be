@@ -1,0 +1,123 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      sha_short: ${{ steps.sha_short.outputs.sha_short }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Calculate short sha
+        id: sha_short
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Detect env to build image
+        id: env
+        shell: bash
+        run: |
+          if [[ ${GITHUB_REF#refs/heads/} == "main" ]]; then
+            echo "env=prod" >> $GITHUB_OUTPUT
+          else
+            echo "env=develop" >> $GITHUB_OUTPUT
+          fi
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push docker image to Amazon ECR for dev
+        if: github.ref != 'refs/heads/main'
+        env:
+          REGISTRY: ${{ vars.CONTAINER_REGISTRY }}
+          REPOSITORY: ${{ vars.IMAGE_PATH }}
+          IMAGE_TAG: ${{ steps.sha_short.outputs.sha_short }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          
+      - name: Build, tag, and push docker image to Amazon ECR for pro
+        if: github.ref == 'refs/heads/main'
+        env:
+          REGISTRY: ${{ vars.CONTAINER_REGISTRY }}
+          REPOSITORY: ${{ vars.IMAGE_PATH_PRO }}
+          IMAGE_TAG: "latest"
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: Trigger workflow for dev 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          MANIFEST_REPOSITORY: ${{ vars.MANIFEST_REPOSITORY }}
+          APP: ${{ vars.K8S_APP}}
+          CONTAINER_NAME: ${{ vars.K8S_CONTAINER_NAME }}
+          TAG: ${{ steps.sha_short.outputs.sha_short }}
+          IMAGE: "${{ vars.CONTAINER_REGISTRY }}/${{ vars.IMAGE_PATH }}"
+        if: github.ref != 'refs/heads/main'
+        run: |
+          gh workflow run main.yml -R "$MANIFEST_REPOSITORY" -f app=$APP -f tag=$TAG -f image=$IMAGE -f container_name=$CONTAINER_NAME -f env=${{ steps.env.outputs.env }}
+       
+
+      
+      # - name: Trigger workflow for production 
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      #     MANIFEST_REPOSITORY: ${{ vars.MANIFEST_REPOSITORY }}
+      #     APP: ${{ vars.K8S_APP}}
+      #     CONTAINER_NAME: ${{ vars.K8S_CONTAINER_NAME }}
+      #     TAG: ${{ steps.sha_short.outputs.sha_short }}
+      #     IMAGE: "${{ vars.CONTAINER_REGISTRY }}/${{ vars.GCP_PROJECT_PROD }}/${{ vars.IMAGE_PATH }}"
+      #   if: github.ref == 'refs/heads/main'
+      #   run: |
+      #     gh workflow run main.yml -R "$MANIFEST_REPOSITORY" -f app=$APP -f tag=$TAG -f image=$IMAGE -f container_name=$CONTAINER_NAME -f env=${{ steps.env.outputs.env }}
+      
+      # - name: send telegram message on push
+      #   uses: appleboy/telegram-action@master
+      #   if: ${{ success() }}
+      #   with:
+      #     to: ${{ secrets.TELEGRAM_CHAT_ID }}
+      #     token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      #     format: html
+      #     message: |
+      #       <b>Status Build: <ins>&#9989</ins> ${{ job.status }}</b>
+      #       <em>${{ github.actor }} created commit</em>
+            
+      #       <em>Commit message: ${{ github.event.commits[0].message }}</em>
+            
+      #       <em>Repository: ${{ github.repository }}</em>
+
+      #       <em>Ref_name: ${{ github.ref_name }}</em>
+            
+      #       <em>See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}</em>
+
+      # - name: send telegram message on push
+      #   uses: appleboy/telegram-action@master
+      #   if: ${{ failure() }}
+      #   with:
+      #     to: ${{ secrets.TELEGRAM_CHAT_ID }}
+      #     token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      #     format: html
+      #     message: |
+      #       <b>Status Build: <ins>&#10060</ins> ${{ job.status }}</b>
+      #       <em>${{ github.actor }} created commit</em>
+
+      #       <em>Commit message: ${{ github.event.commits[0].message }}</em>
+            
+      #       <em>Repository: ${{ github.repository }}</em>
+
+      #       <em>Ref_name: ${{ github.ref_name }}</em>
+            
+      #       <em>See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}</em>
