@@ -1,17 +1,16 @@
 
 FROM node:12
 
+ENV NODE_ENV development
+
 # Create app directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
-COPY package*.json ./
-
-# RUN npm install
-# If you are building your code for production
-RUN npm install --only=production
-
 COPY . .
 
+# Installing dependencies
+RUN npm install
+
 EXPOSE 4000
+
 CMD [ "node", "server.js" ]
