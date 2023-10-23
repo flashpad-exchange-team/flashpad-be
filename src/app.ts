@@ -3,7 +3,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config({});
 
-import { startCronJobs } from "./jobs/pairCreated-event-job";
+import { startCronJobs } from "./jobs/pair-created-event-job";
+import { SERVER_PORT } from "./configs/constants";
+import storage from "./utils/storage";
+import { initDBConnection } from "./configs/database.config";
+
+storage.init("db.json");
+initDBConnection().then((_) => {
+	startCronJobs();
+});
 
 const app = express();
 
@@ -25,8 +33,8 @@ app.get("/health-check", (req: Request, res: Response) => {
 	res.send("OK");
 });
 
-startCronJobs();
 
-const PORT = process.env.PORT || 4000;
 // Start the express server and listen on the specified port
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(SERVER_PORT, () =>
+	console.log(`Server is running on port ${SERVER_PORT}`)
+);
