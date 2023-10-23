@@ -1,8 +1,9 @@
-const fs = require("fs");
-const cron = require("node-cron");
-const ethers = require("ethers");
-const { createCronJob } = require("./swap-event-jobs.js");
-const { abi: PAIR_FACTORY_ABI } = require("./ArthurFactory.json");
+import cron from "node-cron";
+import { writeFileSync } from "fs";
+import { JsonRpcProvider, Contract, EventLog } from "ethers";
+import { createCronJob } from "./swap-event-jobs";
+
+import { abi as PAIR_FACTORY_ABI } from "../resources/ArthurFactory.json";
 
 const RPC_URL = process.env.RPC_URL || "https://rpc.goerli.linea.build";
 
@@ -10,9 +11,9 @@ const PAIR_FACTORY_ADDRESS =
 	process.env.PAIR_FACTORY_ADDRESS ||
 	"0xc65a8b166c2b6C386ee0B6CD7dFd3e502793B2c4";
 
-const provider = new ethers.JsonRpcProvider(RPC_URL);
+const provider = new JsonRpcProvider(RPC_URL);
 
-const pairFactoryContract = new ethers.Contract(
+const pairFactoryContract = new Contract(
 	PAIR_FACTORY_ADDRESS,
 	PAIR_FACTORY_ABI,
 	provider
@@ -40,7 +41,7 @@ const crawlPairCreatedEvents = async () => {
 		eventName,
 		historicalBlockNum,
 		"latest"
-	);
+	) as EventLog[];
 
 	for (const event of events) {
 		const [token0, token1, pair, length] = event.args;
@@ -54,7 +55,7 @@ const crawlPairCreatedEvents = async () => {
 			}
 		);
 		listPairAddresses.push(pair + "");
-		fs.writeFileSync(
+		writeFileSync(
 			"list-pair-addresses.json",
 			JSON.stringify(listPairAddresses)
 		);
@@ -62,7 +63,7 @@ const crawlPairCreatedEvents = async () => {
 	}
 };
 
-const startCronJobs = () => {
+export const startCronJobs = () => {
 	try {
 		cron.schedule("*/5 * * * * *", crawlPairCreatedEvents).start();
 
@@ -72,8 +73,4 @@ const startCronJobs = () => {
 	} catch (error) {
 		console.log(error);
 	}
-};
-
-module.exports = {
-	startCronJobs,
 };

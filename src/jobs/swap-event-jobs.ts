@@ -1,29 +1,29 @@
-const cron = require("node-cron");
-const ethers = require("ethers");
-const { abi: PAIR_ABI } = require("./ArthurPair.json");
+import cron from "node-cron";
+import { JsonRpcProvider, Contract, EventLog } from "ethers";
+import { abi as PAIR_ABI } from "../resources/ArthurPair.json";
 
 const RPC_URL = process.env.RPC_URL || "https://rpc.goerli.linea.build";
 
 // Define an array to store your cron job objects
 const cronJobs = [];
 
-const getCronJobs = () => cronJobs;
+export const getCronJobs = () => cronJobs;
 
-const provider = new ethers.JsonRpcProvider(RPC_URL);
+const provider = new JsonRpcProvider(RPC_URL);
 
 const crawlSwapEvents = async (pairAddress) => {
 	const latestBlock = await provider.getBlock("latest"); // Get the latest block number
 	const latestBlockNum = latestBlock.number;
 	const historicalBlockNum = latestBlockNum - 1000;
 
-	const pairContract = new ethers.Contract(pairAddress, PAIR_ABI, provider);
+	const pairContract = new Contract(pairAddress, PAIR_ABI, provider);
 
 	const eventName = "Swap";
-	const events = await pairContract.queryFilter(
+	const events = (await pairContract.queryFilter(
 		eventName,
 		historicalBlockNum,
 		"latest"
-	);
+	)) as EventLog[];
 
 	for (const event of events) {
 		const [sender, amount0In, amount1In, amount0Out, amount1Out, to] =
@@ -40,7 +40,7 @@ const crawlSwapEvents = async (pairAddress) => {
 };
 
 // Function to create and manage a new cron job
-const createCronJob = (schedule, pairAddress) => {
+export const createCronJob = (schedule, pairAddress) => {
 	const job = cron.schedule(schedule, () => {
 		// Perform the task here
 		crawlSwapEvents(pairAddress);
@@ -51,9 +51,4 @@ const createCronJob = (schedule, pairAddress) => {
 
 	// Start the cron job
 	job.start();
-};
-
-module.exports = {
-	createCronJob,
-	getCronJobs,
 };
