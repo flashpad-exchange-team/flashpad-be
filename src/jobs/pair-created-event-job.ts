@@ -23,44 +23,50 @@ const crawlPairCreatedEvents = async () => {
 	}
 
 	let crawlToBlockNum = lastCrawledBlockNum + 499;
-	crawlToBlockNum = (crawlToBlockNum < latestBlockNum) ? crawlToBlockNum : latestBlockNum;
+	crawlToBlockNum = crawlToBlockNum < latestBlockNum ? crawlToBlockNum : latestBlockNum;
 
 	const eventName = "PairCreated";
-	console.log(`Listening to event ${eventName} from contract Pair Factory at ${PAIR_FACTORY_ADDRESS} ...`);
+	console.log(
+		`Listening to event ${eventName} from contract Pair Factory at ${PAIR_FACTORY_ADDRESS} ...`
+	);
 	const events = (await pairFactoryContract.queryFilter(
 		eventName,
 		lastCrawledBlockNum,
-		crawlToBlockNum,
+		crawlToBlockNum
 	)) as EventLog[];
 
 	for (const event of events) {
-		const [token0, token1, pair, length] = event.args;
-		console.log(
-			`PairFactory contract ${PAIR_FACTORY_ADDRESS} - event PairCreated:`,
-			{
-				token0,
-				token1,
-				pair,
-				length,
-			},
-			`- block: ${event.blockNumber}`,
-		);
-
-		const lpPairEntity = await lpPairRepo.createPair(
-			pair + "",
-			token0 + "",
-			token1 + ""
-		);
-
-		if (!lpPairEntity) {
+		try {
+			const [token0, token1, pair, length] = event.args;
 			console.log(
-				`Error crawlPairCreatedEvents: [DB] Could not save new LP pair ${pair}`
+				`PairFactory contract ${PAIR_FACTORY_ADDRESS} - event PairCreated:`,
+				{
+					token0,
+					token1,
+					pair,
+					length,
+				},
+				`- block: ${event.blockNumber}`
 			);
-			continue;
-		}
 
-		await storage.processBlock(event.blockNumber);
-		createCronJob("*/15 * * * * *", pair + "");
+			const lpPairEntity = await lpPairRepo.createPair(
+				pair + "",
+				token0 + "",
+				token1 + ""
+			);
+
+			if (!lpPairEntity) {
+				console.log(
+					`Error crawlPairCreatedEvents: [DB] Could not save new LP pair ${pair}`
+				);
+				continue;
+			}
+
+			await storage.processBlock(event.blockNumber);
+			createCronJob("*/15 * * * * *", pair + "");
+		} catch (err: any) {
+			console.log(`Error crawlPairCreatedEvents: ${err}`);
+		}
 	}
 	await storage.processBlock(crawlToBlockNum);
 };

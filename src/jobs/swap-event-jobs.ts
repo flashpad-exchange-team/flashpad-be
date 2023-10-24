@@ -48,29 +48,33 @@ const crawlSwapEvents = async (pairAddress: string) => {
 			`- block: ${event.blockNumber}`,
 		);
 
-		const lpPair = await lpPairRepo.getPairByAddress(pairAddress);
-		if (!lpPair) {
-			console.log(
-				`Error crawlSwapEvents: [DB] could not find lpPair by address ${pairAddress}`
-			);
-		}
-
-		const newTx = await txRepo.createTx(
-			lpPair.id,
-			event.transactionHash,
-			amount0In,
-			amount1In
-		);
-
-		if (!newTx) {
-			console.log("Error: [DB] Could not save new Swap tx", {
+		try {
+			const lpPair = await lpPairRepo.getPairByAddress(pairAddress);
+			if (!lpPair) {
+				console.log(
+					`Error crawlSwapEvents: [DB] could not find lpPair by address ${pairAddress}`
+				);
+			}
+	
+			const newTx = await txRepo.createTx(
+				lpPair.id,
+				event.transactionHash,
 				amount0In,
-				amount1In,
-				to,
-				txHash: event.transactionHash,
-			});
+				amount1In
+			);
+	
+			if (!newTx) {
+				console.log("Error: [DB] Could not save new Swap tx", {
+					amount0In,
+					amount1In,
+					to,
+					txHash: event.transactionHash,
+				});
+			}
+			await storage.processBlock(event.blockNumber);
+		} catch (err: any) {
+			console.log(`Error crawlSwapEvents: ${err}`);
 		}
-		await storage.processBlock(event.blockNumber);
 	}
 	await storage.processBlock(crawlToBlockNum);
 };
