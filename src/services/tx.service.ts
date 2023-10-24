@@ -22,9 +22,6 @@ const getLast24hTotalVolumeByLPAddress = async (address: string) => {
 			token2Contract.decimals(),
 		]);
 
-		console.log(BigNumber(tx.token1_amount).div(BigNumber(10).pow(token1Decimals)).toString())
-		console.log(BigNumber(tx.token2_amount).div(BigNumber(10).pow(token2Decimals)).toString())
-
 		const tokenValueUSD = 2.5;
 		totalVolume24h = totalVolume24h.plus(
 			BigNumber(tx.token1_amount).div(BigNumber(10).pow(token1Decimals)).times(tokenValueUSD)
