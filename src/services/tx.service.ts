@@ -15,6 +15,13 @@ const getAllTimeTotalVolumeAllLps = async () => {
 	return totalVolumeAllTime;
 };
 
+const getLast24hTotalVolumeAllLps = async () => {
+	const transactions = await txRepository.getLast24hTxs();
+
+	const totalVolume24hAllLps = calculateTotalVolume(transactions);
+	return totalVolume24hAllLps;
+}
+
 const getTotalVolumeByLp = async (
 	lpAddress: string,
 	getLast24h: boolean = false
@@ -73,5 +80,6 @@ const calculateTotalVolume = async (transactions: TransactionEntity[]) => {
 
 export default {
 	getAllTimeTotalVolumeAllLps,
+	getLast24hTotalVolumeAllLps,
 	getTotalVolumeByLp,
 };
