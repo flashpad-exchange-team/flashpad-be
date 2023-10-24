@@ -22,11 +22,12 @@ const getLast24hTotalVolumeByLPAddress = async (address: string) => {
 			token2Contract.decimals(),
 		]);
 
-		const tokenValueUSD = 2.5;
+		const token1ValueUSD = 1;
+		const token2ValueUSD = 1;
 		totalVolume24h = totalVolume24h.plus(
-			BigNumber(tx.token1_amount).div(BigNumber(10).pow(token1Decimals)).times(tokenValueUSD)
+			BigNumber(tx.token1_amount).div(BigNumber(10).pow(token1Decimals)).times(token1ValueUSD)
 			.plus(
-				BigNumber(tx.token2_amount).div(BigNumber(10).pow(token2Decimals)).times(tokenValueUSD)
+				BigNumber(tx.token2_amount).div(BigNumber(10).pow(token2Decimals)).times(token2ValueUSD)
 			)
 		);
 	}
