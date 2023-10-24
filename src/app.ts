@@ -8,6 +8,8 @@ import { SERVER_PORT } from "./configs/constants";
 import storage from "./utils/storage";
 import { initDBConnection } from "./configs/database.config";
 
+import routes from "./routes";
+
 storage.init("db.json");
 initDBConnection().then((_) => {
 	startCronJobs();
@@ -33,6 +35,9 @@ app.get("/health-check", (req: Request, res: Response) => {
 	res.send("OK");
 });
 
+/** Routes */
+app.use("/lp-pairs", routes.lpPairRoute);
+app.use("/txs", routes.txRoute);
 
 // Start the express server and listen on the specified port
 app.listen(SERVER_PORT, () =>

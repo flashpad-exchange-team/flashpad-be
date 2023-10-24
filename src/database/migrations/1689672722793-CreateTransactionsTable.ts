@@ -1,6 +1,13 @@
-import { MigrationInterface, QueryRunner, Table, TableUnique } from "typeorm";
+import {
+	MigrationInterface,
+	QueryRunner,
+	Table,
+	TableForeignKey,
+	TableUnique,
+} from "typeorm";
 
-export class CreateTransactionsTable1689672722793 implements MigrationInterface
+export class CreateTransactionsTable1689672722793
+	implements MigrationInterface
 {
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
@@ -33,6 +40,17 @@ export class CreateTransactionsTable1689672722793 implements MigrationInterface
 			new TableUnique({
 				name: "UNIQUE_TX_HASH",
 				columnNames: ["tx_hash"],
+			})
+		);
+
+		// create foreign key to notification type
+		await queryRunner.createForeignKey(
+			"transactions",
+			new TableForeignKey({
+				columnNames: ["pair_id"],
+				referencedTableName: "lp_pairs",
+				referencedColumnNames: ["id"],
+				onDelete: "CASCADE",
 			})
 		);
 	}

@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, Unique } from "typeorm";
+import { Entity, Column, ManyToOne, Unique, JoinColumn } from "typeorm";
 import { BaseEntity } from "./base.entity";
 import { LpPairEntity } from "./lpPair.entity";
 
@@ -17,6 +17,7 @@ export class TransactionEntity extends BaseEntity {
 	@ManyToOne(() => LpPairEntity, (pair) => pair.transactions, {
 		onDelete: "CASCADE",
 	})
+	@JoinColumn({ name: "pair_id" })
 	lp_pair: LpPairEntity;
 
 	@Column({ name: "pair_id" })

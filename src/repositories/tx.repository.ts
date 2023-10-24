@@ -11,14 +11,18 @@ export const getAllTxs = async (page: number, limit: number) => {
 	return { total, data };
 };
 
-export const getTxsByPairAddress = async (address: string) => {
+export const getTxsByPairAddress = async (address: string, getLast24h?: boolean) => {
 	const queryBuilder = txRepository()
 		.createQueryBuilder("transactions")
 		.innerJoinAndSelect(
 			"transactions.lp_pair",
 			"lp_pairs"
 		)
-		.where("lp_pairs.address = :address", { address });
+		.where("LOWER(lp_pairs.address) = LOWER(:address)", { address });
+
+	if (getLast24h) {
+		queryBuilder.andWhere("transactions.created_at + INTERVAL '1 day' >= CURRENT_TIMESTAMP");
+	}
 
 	const transactions = await queryBuilder.getMany();
 
