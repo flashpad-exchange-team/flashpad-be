@@ -35,20 +35,20 @@ const crawlSwapEvents = async (pairAddress: string) => {
 	)) as EventLog[];
 
 	for (const event of events) {
-		const [sender, amount0In, amount1In, amount0Out, amount1Out, to] =
-			event.args;
-		console.log(`Pair contract ${pairAddress} - event Swap:`, {
-				sender,
-				amount0In,
-				amount1In,
-				amount0Out,
-				amount1Out,
-				to,
-			},
-			`- block: ${event.blockNumber}`,
-		);
-
 		try {
+			const [sender, amount0In, amount1In, amount0Out, amount1Out, to] =
+				event.args;
+			console.log(`Pair contract ${pairAddress} - event Swap:`, {
+					sender,
+					amount0In,
+					amount1In,
+					amount0Out,
+					amount1Out,
+					to,
+				},
+				`- block: ${event.blockNumber}`,
+			);
+
 			const lpPair = await lpPairRepo.getPairByAddress(pairAddress);
 			if (!lpPair) {
 				console.log(
