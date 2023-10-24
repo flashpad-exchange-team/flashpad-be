@@ -13,4 +13,4 @@ RUN npm install
 
 EXPOSE 4000
 
-CMD [ "node", "app.js" ]
+CMD ["/bin/sh","dockerrun.sh"]
