@@ -19,3 +19,8 @@ export const RPC_URL = process.env.RPC_URL || "https://rpc.goerli.linea.build";
 export const PAIR_FACTORY_ADDRESS =
 	process.env.PAIR_FACTORY_ADDRESS ||
 	"0x5e18b91bA65Dd227a15A44f9543a74511326BcdD";
+
+export const REDIS_HOST = process.env.REDIS_HOST || "localhost";
+export const REDIS_PORT = process.env.REDIS_PORT
+	? parseInt(process.env.REDIS_PORT, 10)
+	: 6379;

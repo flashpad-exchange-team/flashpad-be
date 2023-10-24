@@ -37,7 +37,7 @@ app.get("/health-check", (req: Request, res: Response) => {
 
 /** Routes */
 app.use("/lp-pairs", routes.lpPairRoute);
-app.use("/txs", routes.txRoute);
+app.use("/total-volume", routes.totalVolumeRoute);
 
 // Start the express server and listen on the specified port
 app.listen(SERVER_PORT, () =>

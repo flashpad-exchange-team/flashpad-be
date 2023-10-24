@@ -3,11 +3,18 @@ import { In, getRepository } from "typeorm";
 
 const txRepository = () => getRepository(TransactionEntity);
 
-export const getAllTxs = async (page: number, limit: number) => {
-	const [data, total] = await txRepository().findAndCount({
-		skip: (page - 1) * limit,
-		take: limit,
-	});
+export const getAllTxs = async (page: number = 1, limit: number = 50) => {
+	const queryBuilder = txRepository()
+		.createQueryBuilder("transactions")
+		.innerJoinAndSelect(
+			"transactions.lp_pair",
+			"lp_pairs"
+		);
+	const [data, total] = await queryBuilder
+		.skip((page - 1) * limit)
+		.take(limit)
+		.getManyAndCount();
+
 	return { total, data };
 };
 
