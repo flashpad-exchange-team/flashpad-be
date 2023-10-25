@@ -17,7 +17,7 @@ const app = express();
 
 app.use(
 	cors({
-		origin: ["http://localhost:3000", "https://arthur.exchange"],
+		origin: ["http://localhost:3000", "https://www.arthur.exchange"],
 		credentials: true,
 	})
 );
