@@ -1,10 +1,10 @@
 import cron from "node-cron";
-import { JsonRpcProvider, Contract, EventLog, ethers } from "ethers";
+import { JsonRpcProvider, Contract, EventLog } from "ethers";
 import { createCronJob } from "./swap-event-jobs";
 import * as lpPairRepo from "../repositories/lpPair.repository";
+import * as cronjobInfoRepo from "../repositories/cronJobInfo.repository";
 import { abi as PAIR_FACTORY_ABI } from "../resources/ArthurFactory.json";
 import { PAIR_FACTORY_ADDRESS, RPC_URL } from "../configs/constants";
-import storage from "../utils/storage";
 
 const provider = new JsonRpcProvider(RPC_URL);
 
@@ -15,7 +15,7 @@ const pairFactoryContract = new Contract(
 );
 
 const crawlPairCreatedEvents = async () => {
-	const lastCrawledBlockNum = (await storage.getCurrentBlockNumber()) + 1;
+	const lastCrawledBlockNum = (await cronjobInfoRepo.getCurrentBlockNum()) + 1;
 	const { number: latestBlockNum } = await provider.getBlock("latest");
 	if (lastCrawledBlockNum > latestBlockNum) {
 		console.log(`crawlPairCreatedEvents: reached head block ${latestBlockNum}`);
@@ -23,17 +23,25 @@ const crawlPairCreatedEvents = async () => {
 	}
 
 	let crawlToBlockNum = lastCrawledBlockNum + 499;
-	crawlToBlockNum = crawlToBlockNum < latestBlockNum ? crawlToBlockNum : latestBlockNum;
+	crawlToBlockNum =
+		crawlToBlockNum < latestBlockNum ? crawlToBlockNum : latestBlockNum;
 
 	const eventName = "PairCreated";
 	console.log(
 		`Listening to event ${eventName} from contract Pair Factory at ${PAIR_FACTORY_ADDRESS} ...`
 	);
-	const events = (await pairFactoryContract.queryFilter(
-		eventName,
-		lastCrawledBlockNum,
-		crawlToBlockNum
-	)) as EventLog[];
+
+	let events: EventLog[];
+	try {
+		events = (await pairFactoryContract.queryFilter(
+			eventName,
+			lastCrawledBlockNum,
+			crawlToBlockNum
+		)) as EventLog[];
+	} catch (err: any) {
+		console.log(`Error crawlPairCreatedEvents: ${err}`);
+		return;
+	}
 
 	for (const event of events) {
 		try {
@@ -59,16 +67,21 @@ const crawlPairCreatedEvents = async () => {
 				console.log(
 					`Error crawlPairCreatedEvents: [DB] Could not save new LP pair ${pair}`
 				);
-				continue;
+				return;
 			}
 
-			await storage.processBlock(event.blockNumber);
+			await cronjobInfoRepo.updateCurrentBlockNum(event.blockNumber);
 			createCronJob("*/15 * * * * *", pair + "");
 		} catch (err: any) {
+			if (err?.message?.includes("UNIQUE_LP_ADDRESS")) {
+				console.info("crawlPairCreatedEvents:", err.toString());
+				continue;
+			}
 			console.log(`Error crawlPairCreatedEvents: ${err}`);
+			return;
 		}
 	}
-	await storage.processBlock(crawlToBlockNum);
+	await cronjobInfoRepo.updateCurrentBlockNum(crawlToBlockNum);
 };
 
 export const startCronJobs = async () => {

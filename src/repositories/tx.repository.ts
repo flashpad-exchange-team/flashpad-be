@@ -1,5 +1,5 @@
 import { TransactionEntity } from "../entities/tx.entity";
-import { In, getRepository } from "typeorm";
+import { getRepository } from "typeorm";
 
 const txRepository = () => getRepository(TransactionEntity);
 

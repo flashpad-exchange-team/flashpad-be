@@ -5,12 +5,10 @@ dotenv.config({});
 
 import { startCronJobs } from "./jobs/pair-created-event-job";
 import { SERVER_PORT } from "./configs/constants";
-import storage from "./utils/storage";
 import { initDBConnection } from "./configs/database.config";
 
 import routes from "./routes";
 
-storage.init("db.json");
 initDBConnection().then((_) => {
 	startCronJobs();
 });
