@@ -9,7 +9,7 @@ export class InitCronjobInfo1698188389312 implements MigrationInterface {
         if (!existed || existed.length == 0) {
             await queryRunner.query(
                 "INSERT INTO cronjob_info (last_block_num) VALUES ($1)",
-                [1776150],
+                [1823490],
             );
         }
     }
