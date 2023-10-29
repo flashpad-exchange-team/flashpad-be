@@ -24,3 +24,5 @@ export const REDIS_HOST = process.env.REDIS_HOST || "localhost";
 export const REDIS_PORT = process.env.REDIS_PORT
 	? parseInt(process.env.REDIS_PORT, 10)
 	: 6379;
+
+export const DEFAULT_JOBS_START_BLOCK_NUMBER = Number(process.env.DEFAULT_JOBS_START_BLOCK_NUMBER) || 1823490;
