@@ -8,21 +8,21 @@ import BigNumber from "bignumber.js";
 
 const provider = new JsonRpcProvider(RPC_URL);
 
-const getAllTimeTotalVolumeAllLps = async () => {
+export const getAllTimeTotalVolumeAllLps = async () => {
 	const { data: transactions } = await txRepository.getAllTxs(1, 1000);
 
-	const totalVolumeAllTime = calculateTotalVolume(transactions);
-	return totalVolumeAllTime;
+	const totalVolumeAllTime = await calculateTotalVolume(transactions);
+	return totalVolumeAllTime.toString();
 };
 
-const getLast24hTotalVolumeAllLps = async () => {
+export const getLast24hTotalVolumeAllLps = async () => {
 	const transactions = await txRepository.getLast24hTxs();
 
-	const totalVolume24hAllLps = calculateTotalVolume(transactions);
-	return totalVolume24hAllLps;
+	const totalVolume24hAllLps = await calculateTotalVolume(transactions);
+	return totalVolume24hAllLps.toString();
 }
 
-const getTotalVolumeByLp = async (
+export const getTotalVolumeByLp = async (
 	lpAddress: string,
 	getLast24h: boolean = false
 ) => {
@@ -76,10 +76,4 @@ const calculateTotalVolume = async (transactions: TransactionEntity[]) => {
 		);
 	}
 	return totalVolume;
-};
-
-export default {
-	getAllTimeTotalVolumeAllLps,
-	getLast24hTotalVolumeAllLps,
-	getTotalVolumeByLp,
 };

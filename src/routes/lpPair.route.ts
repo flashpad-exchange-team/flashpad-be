@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import * as LpPairController from '../controllers/lpPair.controller';
+import { Router } from "express";
+import * as LpPairController from "../controllers/lpPair.controller";
 
 const router = Router();
 
-router.get('/', LpPairController.getAllLpPairs);
+router.get("/", LpPairController.getLpPairs);
 
 export default router;

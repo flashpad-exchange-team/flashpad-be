@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import txService from "../services/tx.service";
+import * as txService from "../services/tx.service";
 
 export const getAllLpsTotalVolume = async (req: Request, res: Response) => {
 	const last24h = req.query.last24h === "true";

@@ -1,31 +1,50 @@
-import { Request, Response } from 'express';
-import lpPairService from '../services/lpPair.service';
+import { Request, Response } from "express";
+import * as lpPairService from "../services/lpPair.service";
 
-export const getAllLpPairs = async (req: Request, res: Response) => {
-  try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    // const isRead = typeof req.query.isRead === 'undefined' ? undefined : !!req.query.isRead;
+export const getLpPairs = async (req: Request, res: Response) => {
+	try {
+		const address = req.query.address as string;
+		if (!!address) {
+			return getOneLpPair(res, address);
+		}
 
-    const result = await lpPairService.getAllPairs(
-        page,
-        limit,
-    );
+		const page = parseInt(req.query.page as string) || 1;
+		const limit = parseInt(req.query.limit as string) || 10;
 
-    const { total, data } = result;
-    const response: any = {
-        data,
-        message: 'ok',
-        total,
-        page,
-        limit,
-    };
+		const result = await lpPairService.getAllPairs(page, limit);
 
-    return res.status(200).json(response);
-  } catch (err: any) {
-    console.error(`getAllLpPairs error: ${err?.message || err}`);
-    return res.status(400).json({
-        message: err?.message || 'Bad request',
-    });
-  }
+		const { total, data } = result;
+		const response: any = {
+			data,
+			message: "ok",
+			total,
+			page,
+			limit,
+		};
+
+		return res.status(200).json(response);
+	} catch (err: any) {
+		console.error(`getAllLpPairs error: ${err?.message || err}`);
+		return res.status(500).json({
+			message: err?.message || "Internal server error",
+		});
+	}
+};
+
+const getOneLpPair = async (res: Response, address: string) => {
+	try {
+		const data = await lpPairService.getOnePair(address);
+
+		const response: any = {
+			message: "ok",
+			data,
+		};
+
+		return res.status(200).json(response);
+	} catch (err: any) {
+		console.error(`getAllLpPairs error: ${err?.message || err}`);
+		return res.status(500).json({
+			message: err?.message || "Internal server error",
+		});
+	}
 };

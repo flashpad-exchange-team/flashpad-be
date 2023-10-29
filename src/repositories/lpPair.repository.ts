@@ -12,9 +12,11 @@ export const getAllPairs = async (page: number, limit: number) => {
 };
 
 export const getPairByAddress = async (address: string) => {
-	const lpPair = await lpPairRepository().findOne({
-		where: { address },
-	});
+	const queryBuilder = lpPairRepository()
+		.createQueryBuilder("lp_pairs")
+		.where("LOWER(address) = LOWER(:address)", { address });
+
+	const lpPair = await queryBuilder.getOne();
 	return lpPair;
 };
 
