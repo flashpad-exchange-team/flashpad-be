@@ -1,4 +1,3 @@
-import cron from "node-cron";
 import { JsonRpcProvider, Contract, EventLog } from "ethers";
 import { createCronJob } from "./swap-event-jobs";
 import * as lpPairRepo from "../repositories/lpPair.repository";
@@ -14,7 +13,7 @@ const pairFactoryContract = new Contract(
 	provider
 );
 
-const crawlPairCreatedEvents = async () => {
+export const crawlPairCreatedEvents = async () => {
 	const lastCrawledBlockNum = (await cronjobInfoRepo.getCurrentBlockNum()) + 1;
 	const { number: latestBlockNum } = await provider.getBlock("latest");
 	if (lastCrawledBlockNum > latestBlockNum) {
@@ -82,19 +81,4 @@ const crawlPairCreatedEvents = async () => {
 		}
 	}
 	await cronjobInfoRepo.updateCurrentBlockNum(crawlToBlockNum);
-};
-
-export const startCronJobs = async () => {
-	try {
-		cron.schedule("*/15 * * * * *", crawlPairCreatedEvents).start();
-
-		const { data: lpPairs } = await lpPairRepo.getAllPairs(1, 1000);
-		const listPairAddresses = lpPairs.map((p) => p.address);
-
-		for (const addr of listPairAddresses) {
-			createCronJob("*/15 * * * * *", addr + "");
-		}
-	} catch (error) {
-		console.log("Error startCronJobs:", error);
-	}
 };

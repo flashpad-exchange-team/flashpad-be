@@ -6,15 +6,13 @@ import {
 	TableUnique,
 } from "typeorm";
 
-export class CreateTransactionsTable1689672722793
-	implements MigrationInterface
-{
+export class CreateMerlinPoolsTable1698774363426 implements MigrationInterface {
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 
 		await queryRunner.createTable(
 			new Table({
-				name: "transactions",
+				name: "merlin_pools",
 				columns: [
 					{
 						name: "id",
@@ -23,10 +21,8 @@ export class CreateTransactionsTable1689672722793
 						generationStrategy: "uuid",
 						default: "uuid_generate_v4()",
 					},
-					{ name: "pair_id", type: "varchar" },
-					{ name: "tx_hash", type: "varchar", length: "66" },
-					{ name: "token1_amount", type: "varchar" },
-					{ name: "token2_amount", type: "varchar" },
+					{ name: "address", type: "varchar", length: "42" },
+					{ name: "nft_pool_id", type: "varchar" },
 					{ name: "created_at", type: "timestamp", default: "now()" },
 					{ name: "updated_at", type: "timestamp", default: "now()" },
 					{ name: "deleted_at", type: "timestamp", isNullable: true },
@@ -36,19 +32,19 @@ export class CreateTransactionsTable1689672722793
 		);
 
 		await queryRunner.createUniqueConstraint(
-			"transactions",
+			"merlin_pools",
 			new TableUnique({
-				name: "UNIQUE_TX_HASH",
-				columnNames: ["tx_hash"],
+				name: "UNIQUE_MERLIN_POOL_ADDRESS",
+				columnNames: ["address"],
 			})
 		);
 
-		// create foreign key to lp_pairs
+		// create foreign key to nft_pools
 		await queryRunner.createForeignKey(
-			"transactions",
+			"merlin_pools",
 			new TableForeignKey({
-				columnNames: ["pair_id"],
-				referencedTableName: "lp_pairs",
+				columnNames: ["nft_pool_id"],
+				referencedTableName: "nft_pools",
 				referencedColumnNames: ["id"],
 				onDelete: "CASCADE",
 			})
@@ -56,6 +52,6 @@ export class CreateTransactionsTable1689672722793
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.dropTable("transactions", true);
+		await queryRunner.dropTable("merlin_pools", true);
 	}
 }
