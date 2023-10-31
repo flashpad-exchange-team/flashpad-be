@@ -6,7 +6,7 @@ const lpPairRepository = () => getRepository(LpPairEntity);
 export const getAllPairs = async (page: number, limit: number) => {
 	const queryBuilder = lpPairRepository()
 		.createQueryBuilder("lp_pairs")
-		.innerJoinAndSelect("lp_pairs.nft_pool", "nft_pools")
+		.leftJoinAndSelect("lp_pairs.nft_pool", "nft_pools")
     .skip((page - 1) * limit)
     .take(limit);
 
@@ -18,7 +18,7 @@ export const getAllPairs = async (page: number, limit: number) => {
 export const getPairByAddress = async (address: string) => {
 	const queryBuilder = lpPairRepository()
 		.createQueryBuilder("lp_pairs")
-		.innerJoinAndSelect("lp_pairs.nft_pool", "nft_pools")
+		.leftJoinAndSelect("lp_pairs.nft_pool", "nft_pools")
 		.where("LOWER(lp_pairs.address) = LOWER(:address)", { address });
 
 	const lpPair = await queryBuilder.getOne();
