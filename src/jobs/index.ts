@@ -7,7 +7,7 @@ import { createCronJob } from "./swap-event-jobs";
 export const startCronJobs = async () => {
 	try {
 		cron.schedule("*/15 * * * * *", crawlPairCreatedEvents).start();
-    // cron.schedule("*/15 * * * * *", crawlPoolCreatedEvents).start();
+    cron.schedule("*/15 * * * * *", crawlPoolCreatedEvents).start();
 
 		const { data: lpPairs } = await lpPairRepo.getAllPairs(1, 1000);
 		const listPairAddresses = lpPairs.map((p) => p.address);
