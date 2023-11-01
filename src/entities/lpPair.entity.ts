@@ -1,6 +1,7 @@
-import { Entity, Column, OneToMany, Unique } from "typeorm";
+import { Entity, Column, OneToMany, Unique, OneToOne } from "typeorm";
 import { BaseEntity } from "./base.entity";
 import { TransactionEntity } from "./tx.entity";
+import { NftPoolEntity } from "./nftPool.entity";
 
 @Entity("lp_pairs")
 @Unique(["address"])
@@ -17,4 +18,7 @@ export class LpPairEntity extends BaseEntity {
 
 	@OneToMany(() => TransactionEntity, (tx) => tx.lp_pair)
 	transactions: TransactionEntity[];
+
+	@OneToOne(() => NftPoolEntity, (nftPool) => nftPool.lp_pair)
+	nft_pool: NftPoolEntity;
 }

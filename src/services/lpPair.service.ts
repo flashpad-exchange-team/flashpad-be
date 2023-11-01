@@ -22,6 +22,10 @@ export const getAllPairs = async (page: number, limit: number) => {
 export const getOnePair = async (lpAddress: string) => {
 	const pairData = await lpPairRepository.getPairByAddress(lpAddress);
 
+	if (!pairData) {
+		throw new Error(`LpPair with address ${lpAddress} not found`);
+	}
+
 	const volAllTime = await txService.getTotalVolumeByLp(pairData.address, false);
 	const vol24h = await txService.getTotalVolumeByLp(pairData.address, true);
 

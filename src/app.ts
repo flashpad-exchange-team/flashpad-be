@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config({});
 
-import { startCronJobs } from "./jobs/pair-created-event-job";
+import { startCronJobs } from "./jobs";
 import { SERVER_PORT } from "./configs/constants";
 import { initDBConnection } from "./configs/database.config";
 

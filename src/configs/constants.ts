@@ -20,6 +20,10 @@ export const PAIR_FACTORY_ADDRESS =
 	process.env.PAIR_FACTORY_ADDRESS ||
 	"0x5e18b91bA65Dd227a15A44f9543a74511326BcdD";
 
+export const NFT_POOL_FACTORY_ADDRESS =
+	process.env.NFT_POOL_FACTORY_ADDRESS ||
+	"0x1f530CB1D6EB608396C8427162F8Fd4715A70385";
+
 export const REDIS_HOST = process.env.REDIS_HOST || "localhost";
 export const REDIS_PORT = process.env.REDIS_PORT
 	? parseInt(process.env.REDIS_PORT, 10)

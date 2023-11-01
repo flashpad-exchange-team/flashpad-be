@@ -17,7 +17,7 @@ export class TransactionEntity extends BaseEntity {
 	@ManyToOne(() => LpPairEntity, (pair) => pair.transactions, {
 		onDelete: "CASCADE",
 	})
-	@JoinColumn({ name: "pair_id" })
+	@JoinColumn({ name: "pair_id", referencedColumnName: "id" })
 	lp_pair: LpPairEntity;
 
 	@Column({ name: "pair_id" })

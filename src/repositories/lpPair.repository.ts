@@ -4,17 +4,22 @@ import { In, getRepository } from "typeorm";
 const lpPairRepository = () => getRepository(LpPairEntity);
 
 export const getAllPairs = async (page: number, limit: number) => {
-	const [data, total] = await lpPairRepository().findAndCount({
-		skip: (page - 1) * limit,
-		take: limit,
-	});
+	const queryBuilder = lpPairRepository()
+		.createQueryBuilder("lp_pairs")
+		.leftJoinAndSelect("lp_pairs.nft_pool", "nft_pools")
+    .skip((page - 1) * limit)
+    .take(limit);
+
+	const [data, total] = await queryBuilder.getManyAndCount();
+
 	return { total, data };
 };
 
 export const getPairByAddress = async (address: string) => {
 	const queryBuilder = lpPairRepository()
 		.createQueryBuilder("lp_pairs")
-		.where("LOWER(address) = LOWER(:address)", { address });
+		.leftJoinAndSelect("lp_pairs.nft_pool", "nft_pools")
+		.where("LOWER(lp_pairs.address) = LOWER(:address)", { address });
 
 	const lpPair = await queryBuilder.getOne();
 	return lpPair;

@@ -42,7 +42,7 @@ const getOneLpPair = async (res: Response, address: string) => {
 
 		return res.status(200).json(response);
 	} catch (err: any) {
-		console.error(`getAllLpPairs error: ${err?.message || err}`);
+		console.error(`getOneLpPair error: ${err?.message || err}`);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
