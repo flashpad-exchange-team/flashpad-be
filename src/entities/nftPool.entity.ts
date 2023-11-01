@@ -5,6 +5,7 @@ import { MerlinPoolEntity } from "./merlinPool.entity";
 
 @Entity("nft_pools")
 @Unique(["address"])
+@Unique(["lp_address"])
 export class NftPoolEntity extends BaseEntity {
 	@Column()
 	address: string;
@@ -15,9 +16,12 @@ export class NftPoolEntity extends BaseEntity {
 	@JoinColumn({ name: "pair_id", referencedColumnName: "id" })
 	lp_pair: LpPairEntity;
 
-	@Column({ name: "pair_id" })
+	@Column({ name: "pair_id", nullable: true })
 	pair_id: string;
 
   @OneToOne(() => MerlinPoolEntity, (merlinPool) => merlinPool.nft_pool)
 	merlin_pool: MerlinPoolEntity;
+
+	@Column()
+	lp_address: string;
 }

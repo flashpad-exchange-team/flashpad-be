@@ -1,6 +1,7 @@
 import { JsonRpcProvider, Contract, EventLog } from "ethers";
 import { createCronJob } from "./swap-event-jobs";
 import * as lpPairRepo from "../repositories/lpPair.repository";
+import * as nftPoolRepo from "../repositories/nftPool.repository";
 import * as cronjobInfoRepo from "../repositories/cronJobInfo.repository";
 import { abi as PAIR_FACTORY_ABI } from "../resources/ArthurFactory.json";
 import { PAIR_FACTORY_ADDRESS, RPC_URL } from "../configs/constants";
@@ -68,6 +69,8 @@ export const crawlPairCreatedEvents = async () => {
 				);
 				return;
 			}
+
+			await nftPoolRepo.updateNftPool(pair + "", lpPairEntity.id);
 
 			await cronjobInfoRepo.updateCurrentBlockNum(event.blockNumber);
 			createCronJob("*/15 * * * * *", pair + "");

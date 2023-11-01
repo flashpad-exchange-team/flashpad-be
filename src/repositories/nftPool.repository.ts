@@ -21,16 +21,38 @@ export const createNftPool = async (
 ) => {
   const lpPair = await lpPairRepository.getPairByAddress(lpAddress);
 
-  if (!lpPair) {
-    throw new Error(`LpPair with address ${lpAddress} not found`);
-  }
-
 	const nftPoolObj: Partial<NftPoolEntity> = {
-    pair_id: lpPair.id,
-		address: nftPoolAddress,
+    address: nftPoolAddress,
+    lp_address: lpAddress,
+    ...(lpPair ? { pair_id: lpPair.id } : {}),
 	};
 
 	const nftPool = await nftPoolRepository().save(nftPoolObj);
 
 	return nftPool;
+};
+
+export const updateNftPool = async (
+  lpAddress: string,
+  pairId: string,
+) => {
+  // const lpPair = await lpPairRepository.getPairByAddress(lpAddress);
+
+  // if (!lpPair) {
+  //   throw new Error(`LpPair with address ${lpAddress} not found`);
+  // }
+
+  const nftPool = await nftPoolRepository()
+    .createQueryBuilder("nft_pools")
+    .select()
+    .where("LOWER(lp_address) = LOWER(:lpAddress)", { lpAddress })
+    .getOne();
+  
+  if (!nftPool) {
+    console.log(`updateNftPool: No NftPool with lp_address=${lpAddress} found`);
+    return;
+  }
+
+  nftPool.pair_id = pairId;
+  return await nftPoolRepository().save(nftPool);
 };
