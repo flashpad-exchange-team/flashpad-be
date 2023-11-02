@@ -39,7 +39,12 @@ const calculateTotalVolume = async (transactions: TransactionEntity[]) => {
 	let totalVolume = BigNumber(0);
 	for (const tx of transactions) {
 		const keyToken1Decimals = `decimals:${tx.lp_pair.token1_address}`;
-		let token1Decimals = await rGet(keyToken1Decimals);
+		let token1Decimals, token2Decimals;
+		try {
+			token1Decimals = await rGet(keyToken1Decimals);
+		} catch (error) {
+			console.log(`Error calculateTotalVolume: ${error}`);
+		}
 		if (!token1Decimals) {
 			const token1Contract = new Contract(
 				tx.lp_pair.token1_address,
@@ -51,7 +56,11 @@ const calculateTotalVolume = async (transactions: TransactionEntity[]) => {
 		}
 
 		const keyToken2Decimals = `decimals:${tx.lp_pair.token2_address}`;
-		let token2Decimals = await rGet(keyToken2Decimals);
+		try {
+			token2Decimals = await rGet(keyToken2Decimals);
+		} catch (error) {
+			console.log(`Error calculateTotalVolume: ${error}`);
+		}
 		if (!token2Decimals) {
 			const token2Contract = new Contract(
 				tx.lp_pair.token2_address,
