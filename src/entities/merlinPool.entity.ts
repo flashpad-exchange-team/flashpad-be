@@ -14,6 +14,6 @@ export class MerlinPoolEntity extends BaseEntity {
 	@JoinColumn({ name: "nft_pool_id", referencedColumnName: "id" })
 	nft_pool: NftPoolEntity;
 
-	@Column({ name: "nft_pool_id" })
+	@Column({ name: "nft_pool_id", nullable: true })
 	nft_pool_id: string;
 }
