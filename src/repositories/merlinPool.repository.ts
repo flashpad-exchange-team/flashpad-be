@@ -23,5 +23,8 @@ export const getMerlinPoolsByConditions = async (
 export const getOneMerlinPoolByConditions = async (
   conditions: Record<string, any>
 ) => {
-  return merlinPoolRepository().findOne({ where: conditions });
+  return merlinPoolRepository().findOne({
+    where: conditions,
+    relations: ["nft_pool", "nft_pool.lp_pair"],
+  });
 };

@@ -1,9 +1,9 @@
-import { ethers, JsonRpcProvider, Contract } from "ethers";
+import { Contract, JsonRpcProvider, ethers } from "ethers";
 import { Request, Response } from "express";
-import * as merlinPoolService from "../services/merlinPool.service";
+import { ONE_YEAR, RPC_URL } from "../configs/constants";
+import { abi as ArthurPairABI } from "../resources/ArthurPair.json";
 import { abi as MERLIN_POOL_ABI } from "../resources/MerlinPool.json";
-import { abi as NFT_POOL_ABI } from "../resources/NFTPool.json";
-import { RPC_URL } from "../configs/constants";
+import * as merlinPoolService from "../services/merlinPool.service";
 
 export const getInfo = async (req: Request, res: Response) => {
   try {
@@ -24,30 +24,59 @@ export const getInfo = async (req: Request, res: Response) => {
     const provider = new JsonRpcProvider(RPC_URL);
     const merlinPoolContract = new Contract(address, MERLIN_POOL_ABI, provider);
 
-    const nftPoolAddress = await merlinPoolContract.nftPool();
+    const pairContract = new Contract(
+      merlinPool.nft_pool.lp_address,
+      ArthurPairABI,
+      provider
+    );
 
-    const nftPoolContract = new Contract(nftPoolAddress, NFT_POOL_ABI, provider);
-
-    const [totalDepositAmount, rewardToken1, rewardToken2, nftPoolInfo] = await Promise.all([
+    const [
+      [reserves0, reserves1],
+      lpTotalSuppy,
+      totalDepositAmount,
+      rewardsToken1PerSecond,
+    ] = await Promise.all([
+      pairContract.getReserves(),
+      pairContract.totalSupply(),
       merlinPoolContract.totalDepositAmount(),
-      merlinPoolContract.rewardsToken1(),
-      merlinPoolContract.rewardsToken2(),
-      nftPoolContract.getPoolInfo()
+      merlinPoolContract.rewardsToken1PerSecond(),
     ]);
 
-    console.log('nftPoolInfo', nftPoolInfo[0])
+    // !TODO: Call api or do something to calculate price
+    const reserveToken1Price = BigInt(1);
+    const reserveToken2Price = BigInt(1);
+    const lpTVL =
+      reserves0 * reserveToken1Price + reserves1 * reserveToken2Price;
+
+    // 1 parameter
+    const merlinPoolTVP = (totalDepositAmount * lpTVL) / lpTotalSuppy;
+
+    // !TODO: Call api or do something to calculate price
+    const rewardsToken1Price = BigInt(1);
+    const yearlyEmission =
+      rewardsToken1PerSecond * rewardsToken1Price * BigInt(ONE_YEAR);
+
+    /**
+     * APR = (yearly emission / TVL MerlinPool) * 100
+     */
+    const apr =
+      merlinPoolTVP === BigInt(0)
+        ? BigInt(0)
+        : (yearlyEmission * BigInt(100)) / merlinPoolTVP;
 
     const response: any = {
       message: "ok",
-      address,
-      totalDepositAmount: totalDepositAmount.toString(),
-      rewardToken1: rewardToken1.token,
-      rewardToken2: rewardToken2.token,
-      nftPoolAddress,
+      data: {
+        merlinPoolTVP: merlinPoolTVP.toString(),
+        apr: apr.toString(),
+        lpTotalSuppy: lpTotalSuppy.toString(),
+        totalDepositAmount: totalDepositAmount.toString(),
+      },
     };
 
     return res.status(200).json(response);
   } catch (err: any) {
+    console.log(err);
     return res.status(500).json({
       message: err?.message || "Internal server error",
     });
