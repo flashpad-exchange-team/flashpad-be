@@ -30,3 +30,4 @@ export const REDIS_PORT = process.env.REDIS_PORT
 	: 6379;
 
 export const DEFAULT_JOBS_START_BLOCK_NUMBER = Number(process.env.DEFAULT_JOBS_START_BLOCK_NUMBER) || 1823490;
+export const ONE_YEAR = 86400 * 365
