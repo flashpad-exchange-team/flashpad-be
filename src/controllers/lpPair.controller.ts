@@ -317,11 +317,9 @@ export const getInfoOfAllPool = async (req: Request, res: Response) => {
       });
     }
 
-    let totalTVL = new BigNumber(0)
-    for (let i = 0; i < allPairsData.length; i++) {
-      const pairData: any = allPairsData[i];
-      const token1Data: any = tokenDataMap.get(pairData.token1_address);
-      const token2Data: any = tokenDataMap.get(pairData.token2_address);
+    const totalTVL = allPairsData.reduce((pre, cur) => {
+      const token1Data: any = tokenDataMap.get(cur.token1_address);
+      const token2Data: any = tokenDataMap.get(cur.token2_address);
 
       const [reserve1, reserve2]: any = (reserves as any)[i];
 
@@ -331,9 +329,27 @@ export const getInfoOfAllPool = async (req: Request, res: Response) => {
         .times(USD_PRICE)
         .plus(new BigNumber(token2Reserve).times(USD_PRICE))
         .toFixed(2);
+      return pre.plus(TVL);
+
+    }, new BigNumber(0))
+    
+    // let totalTVL = new BigNumber(0)
+    // for (let i = 0; i < allPairsData.length; i++) {
+    //   const pairData: any = allPairsData[i];
+    //   const token1Data: any = tokenDataMap.get(pairData.token1_address);
+    //   const token2Data: any = tokenDataMap.get(pairData.token2_address);
+
+    //   const [reserve1, reserve2]: any = (reserves as any)[i];
+
+    //   const token1Reserve: any = formatUnits(reserve1, token1Data.decimals);
+    //   const token2Reserve: any = formatUnits(reserve2, token2Data.decimals);
+    //   const TVL: any = new BigNumber(token1Reserve)
+    //     .times(USD_PRICE)
+    //     .plus(new BigNumber(token2Reserve).times(USD_PRICE))
+    //     .toFixed(2);
       
-      totalTVL = totalTVL.plus(TVL);
-    }
+      // totalTVL = totalTVL.plus(TVL);
+    // }
 
     return res.status(200).json({
       totalTVL: totalTVL.toString()
