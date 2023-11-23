@@ -186,6 +186,25 @@ export const CHAINS_TOKENS_LIST = [
     chainId: 59140,
     chainURI: "https://goerli.lineascan.build/block/0",
     tokenId:
+      "https://goerli.lineascan.build/token/0x347b29EFca2f921fFc776Cdc01AF785f043368c6",
+    tokenType: ["bridged"],
+    address: "0x347b29EFca2f921fFc776Cdc01AF785f043368c6",
+    name: "Arthur USD Tether",
+    symbol: "USDT",
+    decimals: 6,
+    createdAt: "2023-06-27",
+    updatedAt: "2023-06-27",
+    logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+    extension: {
+      rootChainId: 5,
+      rootChainURI: "https://goerli.etherscan.io/block/0",
+      rootAddress: "0xfad6367E97217cC51b4cd838Cc086831f81d38C2",
+    },
+  },
+  {
+    chainId: 59140,
+    chainURI: "https://goerli.lineascan.build/block/0",
+    tokenId:
       "https://goerli.lineascan.build/token/0xDbcd5BafBAA8c1B326f14EC0c8B125DB57A5cC4c",
     tokenType: ["native"],
     address: "0xDbcd5BafBAA8c1B326f14EC0c8B125DB57A5cC4c",

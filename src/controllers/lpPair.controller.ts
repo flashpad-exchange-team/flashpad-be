@@ -173,7 +173,7 @@ export const getAllPairsDataForAllPool = async (
     }
     return res.status(200).json(listPairs);
   } catch (err: any) {
-    console.error(`getAllLpPairs error: ${err?.message || err}`);
+    console.error(`getAllPairsDataForAllPool error: ${err?.message || err}`);
     return res.status(500).json({
       message: err?.message || "Internal server error",
     });
@@ -284,7 +284,7 @@ export const getAllPairsDataForPosition = async (
 
     return res.status(200).json(toObject(listPairs));
   } catch (err: any) {
-    console.error(`getAllLpPairs error: ${err?.message || err}`);
+    console.error(`getAllPairsDataForPosition error: ${err?.message || err}`);
     return res.status(500).json({
       message: err?.message || "Internal server error",
     });
