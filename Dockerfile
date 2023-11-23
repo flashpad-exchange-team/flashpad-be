@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Installing dependencies
-RUN npm install
+RUN  npm install --legacy-peer-deps
 
 RUN npm install -g ts-node
 
