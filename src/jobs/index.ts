@@ -2,18 +2,26 @@ import cron from "node-cron";
 import * as lpPairRepo from "../repositories/lpPair.repository";
 import { crawlPairCreatedEvents } from "./pair-created-event-job";
 import { crawlPoolCreatedEvents } from "./pool-created-event-job";
-import { createCronJob } from "./swap-event-jobs";
+import { createSwapEventCronJob } from "./swap-event-jobs";
+import { PAIR_CREATED_EVENT_JOB_ENABLED, POOL_CREATED_EVENT_JOB_ENABLED, SWAP_EVENT_JOB_ENABLED } from "../configs/constants";
 
 export const startCronJobs = async () => {
 	try {
-		cron.schedule("*/15 * * * * *", crawlPairCreatedEvents).start();
-    cron.schedule("*/15 * * * * *", crawlPoolCreatedEvents).start();
+		if (PAIR_CREATED_EVENT_JOB_ENABLED) {
+			cron.schedule("*/15 * * * * *", crawlPairCreatedEvents).start();
+		}
 
-		const { data: lpPairs } = await lpPairRepo.getAllPairs(1, 1000);
-		const listPairAddresses = lpPairs.map((p) => p.address);
+		if (POOL_CREATED_EVENT_JOB_ENABLED) {
+			cron.schedule("*/15 * * * * *", crawlPoolCreatedEvents).start();
+		}
 
-		for (const addr of listPairAddresses) {
-			createCronJob("*/15 * * * * *", addr + "");
+		if (SWAP_EVENT_JOB_ENABLED) {
+			const { data: lpPairs } = await lpPairRepo.getAllPairs(1, 1000);
+			const listPairAddresses = lpPairs.map((p) => p.address);
+	
+			for (const addr of listPairAddresses) {
+				createSwapEventCronJob("*/15 * * * * *", addr + "");
+			}
 		}
 	} catch (error) {
 		console.log("Error startCronJobs:", error);

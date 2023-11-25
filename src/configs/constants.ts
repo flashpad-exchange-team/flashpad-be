@@ -18,6 +18,12 @@ export const DB_MAX_CONNECTION = process.env.POSTGRES_DB_MAX_CONNECTION_POLL
 
 export const RPC_URL = process.env.RPC_URL || "https://rpc.goerli.linea.build";
 
+export const PAIR_CREATED_EVENT_JOB_ENABLED = process.env.PAIR_CREATED_JOB_ENABLED === 'true' || false;
+
+export const SWAP_EVENT_JOB_ENABLED = process.env.SWAP_EVENT_JOB_ENABLED === 'true' || false;
+
+export const POOL_CREATED_EVENT_JOB_ENABLED = process.env.POOL_CREATED_EVENT_JOB_ENABLED === 'true' || false;
+
 export const PAIR_FACTORY_ADDRESS =
   process.env.PAIR_FACTORY_ADDRESS ||
   "0x5e18b91bA65Dd227a15A44f9543a74511326BcdD";

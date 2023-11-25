@@ -79,8 +79,6 @@ export const getAllPairsDataForAllPool = async (
 
     const allPairsData = result.data;
 
-    console.log("userAddress", userAddress);
-
     const userLpBalancesPromises: Promise<any>[] = userAddress
       ? allPairsData.map((pairData) =>
           pairContract.read(pairData.address, "balanceOf", [userAddress])
@@ -290,3 +288,60 @@ export const getAllPairsDataForPosition = async (
     });
   }
 };
+
+export const getInfoOfAllPool = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const result = await lpPairService.getAllPairs(page, limit);
+
+    const allPairsData = result.data;
+    const [reserves] = await Promise.all([
+      Promise.all(
+        allPairsData.map((pairData) =>
+          pairContract.read(pairData.address, "getReserves", [])
+        )
+      ) as any,
+    ]);
+
+    const tokenDataMap: Map<string, any> = new Map();
+    for (const token of CHAINS_TOKENS_LIST) {
+      tokenDataMap.set(token.address, {
+        symbol:
+          token.symbol == "WFTM" || token.symbol == "WETH"
+            ? "ETH"
+            : token.symbol,
+        logoURI: token.logoURI,
+        decimals: token.decimals || 8,
+      });
+    }
+
+    let totalTVL = new BigNumber(0)
+    for (let i = 0; i < allPairsData.length; i++) {
+      const pairData: any = allPairsData[i];
+      const token1Data: any = tokenDataMap.get(pairData.token1_address);
+      const token2Data: any = tokenDataMap.get(pairData.token2_address);
+
+      const [reserve1, reserve2]: any = (reserves as any)[i];
+
+      const token1Reserve: any = formatUnits(reserve1, token1Data.decimals);
+      const token2Reserve: any = formatUnits(reserve2, token2Data.decimals);
+      const TVL: any = new BigNumber(token1Reserve)
+        .times(USD_PRICE)
+        .plus(new BigNumber(token2Reserve).times(USD_PRICE))
+        .toFixed(2);
+      
+      totalTVL = totalTVL.plus(TVL);
+    }
+
+    return res.status(200).json({
+      totalTVL: totalTVL.toString()
+    });
+  } catch (err: any) {
+    console.error(`getAllLpPairs error: ${err?.message || err}`);
+    return res.status(500).json({
+      message: err?.message || "Internal server error",
+    });
+  }
+}

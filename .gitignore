@@ -35,4 +35,4 @@ coverage
 !.vscode/extensions.json
 
 .env
-db.json
+package-lock.json
