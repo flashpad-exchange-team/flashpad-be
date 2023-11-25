@@ -3,7 +3,7 @@ import * as lpPairRepo from "../repositories/lpPair.repository";
 import { crawlPairCreatedEvents } from "./pair-created-event-job";
 import { crawlPoolCreatedEvents } from "./pool-created-event-job";
 import { createSwapEventCronJob } from "./swap-event-jobs";
-import { PAIR_CREATED_EVENT_JOB_ENABLED, POOL_CREATED_EVENT_JOB_ENABLED, SWAP_EVENT_JOB_ENABLED } from "configs/constants";
+import { PAIR_CREATED_EVENT_JOB_ENABLED, POOL_CREATED_EVENT_JOB_ENABLED, SWAP_EVENT_JOB_ENABLED } from "../configs/constants";
 
 export const startCronJobs = async () => {
 	try {
