@@ -1,5 +1,5 @@
 import { toObject } from "./../utils/misc";
-import { Contract, JsonRpcProvider, ethers } from "ethers";
+import { Contract, JsonRpcProvider, ZeroAddress, ethers } from "ethers";
 import { Request, Response } from "express";
 import { Address } from "viem";
 import {
@@ -99,14 +99,8 @@ export const getInfo = async (req: Request, res: Response) => {
 // useAllMerlinPoolsData
 export const getAllMerlinPoolsData = async (req: Request, res: Response) => {
   try {
-    const userAddress = req.query.userAddress as string;
-    if (!userAddress) {
-      res.status(400).send("Invalid user address");
-      return;
-    }
+    const { userAddress = ZeroAddress } = req.query;
     const listMerlinPools = [];
-
-    console.log("listMerlinPools", listMerlinPools);
 
     const nPools = await merlinPoolFactoryContract.read(
       MERLIN_POOL_FACTORY_ADDRESS as Address,
