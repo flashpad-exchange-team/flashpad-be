@@ -98,7 +98,10 @@ const crawlSwapEvents = async (pairAddress: string) => {
 };
 
 // Function to create and manage a new cron job
-export const createCronJob = (schedule: string, pairAddress: string) => {
+export const createSwapEventCronJob = (
+	schedule: string,
+	pairAddress: string
+) => {
 	const job = cron.schedule(schedule, () => {
 		// Perform the task here
 		crawlSwapEvents(pairAddress);

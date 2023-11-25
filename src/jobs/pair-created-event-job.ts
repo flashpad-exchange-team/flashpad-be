@@ -1,5 +1,5 @@
 import { JsonRpcProvider, Contract, EventLog } from "ethers";
-import { createCronJob } from "./swap-event-jobs";
+import { createSwapEventCronJob } from "./swap-event-jobs";
 import * as lpPairRepo from "../repositories/lpPair.repository";
 import * as nftPoolRepo from "../repositories/nftPool.repository";
 import * as cronjobInfoRepo from "../repositories/cronJobInfo.repository";
@@ -73,7 +73,7 @@ export const crawlPairCreatedEvents = async () => {
 			await nftPoolRepo.updateNftPool(pair + "", lpPairEntity.id);
 
 			await cronjobInfoRepo.updateCurrentBlockNum(event.blockNumber);
-			createCronJob("*/15 * * * * *", pair + "");
+			createSwapEventCronJob("*/15 * * * * *", pair + "");
 		} catch (err: any) {
 			if (err?.message?.includes("UNIQUE_LP_ADDRESS")) {
 				console.info("crawlPairCreatedEvents:", err.toString());
