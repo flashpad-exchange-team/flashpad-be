@@ -24,7 +24,7 @@ export const SWAP_EVENT_JOB_ENABLED = process.env.SWAP_EVENT_JOB_ENABLED === 'tr
 
 export const POOL_CREATED_EVENT_JOB_ENABLED = process.env.POOL_CREATED_EVENT_JOB_ENABLED === 'true' || false;
 
-export const CREATE_MERLIN_POOL_EVENT_JOB_ENABLED = process.env.CREATE_MERLIN_POOL_EVENT_JOB_ENABLED === 'true' || true;
+export const CREATE_MERLIN_POOL_EVENT_JOB_ENABLED = process.env.CREATE_MERLIN_POOL_EVENT_JOB_ENABLED === 'true' || false;
 
 export const PAIR_FACTORY_ADDRESS =
   process.env.PAIR_FACTORY_ADDRESS ||
