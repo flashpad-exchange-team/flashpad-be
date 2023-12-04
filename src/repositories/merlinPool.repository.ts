@@ -1,5 +1,6 @@
-import { MerlinPoolEntity } from "../entities/merlinPool.entity";
 import { getRepository } from "typeorm";
+import { MerlinPoolEntity } from "../entities/merlinPool.entity";
+import * as nftPoolRepository from "./nftPool.repository";
 
 const merlinPoolRepository = () => getRepository(MerlinPoolEntity);
 
@@ -27,4 +28,20 @@ export const getOneMerlinPoolByConditions = async (
     where: conditions,
     relations: ["nft_pool", "nft_pool.lp_pair"],
   });
+};
+
+export const createMerlinPool = async (
+  merlinPoolAddress: string,
+  nftPoolAddress: string,
+) => {
+  const nftPool = await nftPoolRepository.getNftPoolByAddress(nftPoolAddress);
+
+	const merlinPoolObj: Partial<MerlinPoolEntity> = {
+    address: merlinPoolAddress,
+    ...(nftPool ? { nft_pool_id: nftPool.id } : {}),
+	};
+
+	const merlinPool = await merlinPoolRepository().save(merlinPoolObj);
+
+	return merlinPool;
 };

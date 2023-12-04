@@ -15,6 +15,30 @@ export const getAllNftPools = async (page: number, limit: number) => {
 	return { total, data };
 };
 
+export const getNftPoolsByConditions = async (
+  conditions: Record<string, any>
+) => {
+  return nftPoolRepository().find({ where: conditions });
+};
+
+export const getOneNftPoolByConditions = async (
+  conditions: Record<string, any>
+) => {
+  return nftPoolRepository().findOne({
+    where: conditions,
+  });
+};
+
+export const getNftPoolByAddress = async (address: string) => {
+	const queryBuilder = nftPoolRepository()
+		.createQueryBuilder("nft_pools")
+		// .leftJoinAndSelect("lp_pairs.nft_pool", "nft_pools")
+		.where("LOWER(nft_pools.address) = LOWER(:address)", { address });
+
+	const nftPool = await queryBuilder.getOne();
+	return nftPool;
+};
+
 export const createNftPool = async (
 	lpAddress: string,
 	nftPoolAddress: string,

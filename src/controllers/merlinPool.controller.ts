@@ -45,7 +45,7 @@ export const getInfo = async (req: Request, res: Response) => {
 
     const [
       [reserves0, reserves1],
-      lpTotalSuppy,
+      lpTotalSupply,
       totalDepositAmount,
       rewardsToken1PerSecond,
     ] = await Promise.all([
@@ -62,7 +62,7 @@ export const getInfo = async (req: Request, res: Response) => {
       reserves0 * reserveToken1Price + reserves1 * reserveToken2Price;
 
     // 1 parameter
-    const merlinPoolTVP = (totalDepositAmount * lpTVL) / lpTotalSuppy;
+    const merlinPoolTVP = (totalDepositAmount * lpTVL) / lpTotalSupply;
 
     // !TODO: Call api or do something to calculate price
     const rewardsToken1Price = BigInt(1);
@@ -82,7 +82,7 @@ export const getInfo = async (req: Request, res: Response) => {
       data: {
         merlinPoolTVP: merlinPoolTVP.toString(),
         apr: apr.toString(),
-        lpTotalSuppy: lpTotalSuppy.toString(),
+        lpTotalSupply: lpTotalSupply.toString(),
         totalDepositAmount: totalDepositAmount.toString(),
       },
     };
@@ -225,7 +225,7 @@ export const getAllMerlinPoolsData = async (req: Request, res: Response) => {
       });
     }
 
-    res.json(toObject(listMerlinPools));
+    return res.json(toObject(listMerlinPools));
   } catch (err: any) {
     return res.status(500).json({
       message: err?.message || "Internal server error",

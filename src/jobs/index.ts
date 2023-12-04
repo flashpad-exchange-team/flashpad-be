@@ -3,7 +3,13 @@ import * as lpPairRepo from "../repositories/lpPair.repository";
 import { crawlPairCreatedEvents } from "./pair-created-event-job";
 import { crawlPoolCreatedEvents } from "./pool-created-event-job";
 import { createSwapEventCronJob } from "./swap-event-jobs";
-import { PAIR_CREATED_EVENT_JOB_ENABLED, POOL_CREATED_EVENT_JOB_ENABLED, SWAP_EVENT_JOB_ENABLED } from "../configs/constants";
+import { crawlCreateMerlinPoolEvents } from "./create-merlin-pool-event-job";
+import {
+	CREATE_MERLIN_POOL_EVENT_JOB_ENABLED,
+	PAIR_CREATED_EVENT_JOB_ENABLED,
+	POOL_CREATED_EVENT_JOB_ENABLED,
+	SWAP_EVENT_JOB_ENABLED,
+} from "../configs/constants";
 
 export const startCronJobs = async () => {
 	try {
@@ -15,10 +21,14 @@ export const startCronJobs = async () => {
 			cron.schedule("*/15 * * * * *", crawlPoolCreatedEvents).start();
 		}
 
+		if (CREATE_MERLIN_POOL_EVENT_JOB_ENABLED) {
+			cron.schedule("*/15 * * * * *", crawlCreateMerlinPoolEvents).start();
+		}
+
 		if (SWAP_EVENT_JOB_ENABLED) {
 			const { data: lpPairs } = await lpPairRepo.getAllPairs(1, 1000);
 			const listPairAddresses = lpPairs.map((p) => p.address);
-	
+
 			for (const addr of listPairAddresses) {
 				createSwapEventCronJob("*/15 * * * * *", addr + "");
 			}

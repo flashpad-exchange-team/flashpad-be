@@ -8,8 +8,8 @@ export class UpdateMerlinPoolsTable1699541868574 implements MigrationInterface {
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(
+		await queryRunner.query(
 			`ALTER TABLE merlin_pools ALTER COLUMN nft_pool_id SET NOT NULL`
 		);
-    }
+	}
 }
