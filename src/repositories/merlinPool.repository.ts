@@ -30,6 +30,16 @@ export const getOneMerlinPoolByConditions = async (
   });
 };
 
+export const getMerlinPoolByAddress = async (address: string) => {
+	const queryBuilder = merlinPoolRepository()
+		.createQueryBuilder("merlin_pools")
+    .leftJoinAndSelect("merlin_pools.nft_pool", "nft_pool")
+		.where("LOWER(merlin_pools.address) = LOWER(:address)", { address });
+
+	const merlinPool = await queryBuilder.getOne();
+	return merlinPool;
+};
+
 export const createMerlinPool = async (
   merlinPoolAddress: string,
   nftPoolAddress: string,

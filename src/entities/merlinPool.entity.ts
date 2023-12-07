@@ -16,4 +16,7 @@ export class MerlinPoolEntity extends BaseEntity {
 
 	@Column({ name: "nft_pool_id", nullable: true })
 	nft_pool_id: string;
+
+	@Column({ name: "is_early_knight", default: false })
+	is_early_knight: boolean;
 }

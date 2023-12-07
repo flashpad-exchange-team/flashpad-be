@@ -9,11 +9,6 @@ import BigNumber from "bignumber.js";
 // useAllNftPoolsData
 export const getNftPoolData = async (req: Request, res: Response) => {
   try {
-    const address = req.query.address as string;
-    if (!!address) {
-      return getOneLpPair(res, address);
-    }
-
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
@@ -113,20 +108,20 @@ export const getNftPoolData = async (req: Request, res: Response) => {
   }
 };
 
-const getOneLpPair = async (res: Response, address: string) => {
-  try {
-    const data = await lpPairService.getOnePair(address);
+// const getOneLpPair = async (res: Response, address: string) => {
+//   try {
+//     const data = await lpPairService.getOnePair(address);
 
-    const response: any = {
-      message: "ok",
-      data,
-    };
+//     const response: any = {
+//       message: "ok",
+//       data,
+//     };
 
-    return res.status(200).json(response);
-  } catch (err: any) {
-    console.error(`getOneLpPair error: ${err?.message || err}`);
-    return res.status(500).json({
-      message: err?.message || "Internal server error",
-    });
-  }
-};
+//     return res.status(200).json(response);
+//   } catch (err: any) {
+//     console.error(`getOneLpPair error: ${err?.message || err}`);
+//     return res.status(500).json({
+//       message: err?.message || "Internal server error",
+//     });
+//   }
+// };
