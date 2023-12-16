@@ -3,7 +3,7 @@ import { createSwapEventCronJob } from "./swap-event-jobs";
 import * as lpPairRepo from "../repositories/lpPair.repository";
 import * as nftPoolRepo from "../repositories/nftPool.repository";
 import * as cronjobInfoRepo from "../repositories/cronJobInfo.repository";
-import { abi as PAIR_FACTORY_ABI } from "../resources/ArthurFactory.json";
+import { abi as PAIR_FACTORY_ABI } from "../resources/FlashpadFactory.json";
 import { PAIR_FACTORY_ADDRESS, RPC_URL } from "../configs/constants";
 
 const provider = new JsonRpcProvider(RPC_URL);

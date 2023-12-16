@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { abi as ArthurMasterABI } from "../resources/ArthurMaster.json";
+import { abi as FlashpadMasterABI } from "../resources/FlashpadMaster.json";
 import { publicClient } from "./web3Clients";
 
 export const read = async (
@@ -10,7 +10,7 @@ export const read = async (
   try {
     const result = await publicClient.readContract({
       address,
-      abi: ArthurMasterABI,
+      abi: FlashpadMasterABI,
       functionName,
       args,
     });

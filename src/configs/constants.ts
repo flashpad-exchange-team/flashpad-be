@@ -9,7 +9,8 @@ export const DB_HOST = process.env.POSTGRES_DB_HOST || "localhost";
 export const DB_PORT = process.env.POSTGRES_DB_PORT
 	? parseInt(process.env.POSTGRES_DB_PORT)
 	: 5432;
-export const DB_DATABASE = process.env.POSTGRES_DB_DATABASE || "arthurdb";
+// export const DB_DATABASE = process.env.POSTGRES_DB_DATABASE || "flashpaddb";
+export const DB_DATABASE = "flashpaddb";
 export const DB_USERNAME = process.env.POSTGRES_DB_USERNAME || "postgres";
 export const DB_PASSWORD = process.env.POSTGRES_DB_PASSWORD || "postgres";
 export const DB_MAX_CONNECTION = process.env.POSTGRES_DB_MAX_CONNECTION_POLL
@@ -27,40 +28,51 @@ export const SWAP_EVENT_JOB_ENABLED =
 export const POOL_CREATED_EVENT_JOB_ENABLED =
 	process.env.POOL_CREATED_EVENT_JOB_ENABLED === "true" || false;
 
-export const CREATE_MERLIN_POOL_EVENT_JOB_ENABLED =
-	process.env.CREATE_MERLIN_POOL_EVENT_JOB_ENABLED === "true" || false;
+export const CREATE_THUNDER_POOL_EVENT_JOB_ENABLED =
+	process.env.CREATE_THUNDER_POOL_EVENT_JOB_ENABLED === "true" || false;
 
 export const PAIR_FACTORY_ADDRESS =
 	process.env.PAIR_FACTORY_ADDRESS ||
-	"0xf21BA8A951C2e43FC5eDF6E220D2328eA659c81C";
+	"0xb19c2510dA6d5799FD23e43DA2CA8f5669C1C78d";
 
 export const NFT_POOL_FACTORY_ADDRESS =
 	process.env.NFT_POOL_FACTORY_ADDRESS ||
-	"0x1f530CB1D6EB608396C8427162F8Fd4715A70385";
+	"0x9374d8c4a89706f0f4d7B497ae12cd15CF3676D9";
 
-export const ARTHUR_MASTER_ADDRESS =
-	process.env.ARTHUR_MASTER_ADDRESS ||
-	"0xd505e9e44bEda07da5C93684746613ED33ae21eF";
+export const FLASHPAD_MASTER_ADDRESS =
+	process.env.FLASHPAD_MASTER_ADDRESS ||
+	"0xAb7Aa215aC9eAeAE65601B8250Ae851Fb3E97D32";
 
-export const MERLIN_POOL_FACTORY_ADDRESS =
-	process.env.MERLIN_POOL_FACTORY_ADDRESS ||
-	"0xA424e77e1A0F82e6a5946A6e22704Ff0f80A4818";
+export const THUNDER_POOL_FACTORY_ADDRESS =
+	process.env.THUNDER_POOL_FACTORY_ADDRESS ||
+	"0x5F622d1d08C7488d8632B8A42122f672041dd396";
 
 export const REDIS_HOST = process.env.REDIS_HOST || "localhost";
 export const REDIS_PORT = process.env.REDIS_PORT
 	? parseInt(process.env.REDIS_PORT, 10)
 	: 6379;
 
-export const DEFAULT_JOBS_START_BLOCK_NUMBER =
-	Number(process.env.DEFAULT_JOBS_START_BLOCK_NUMBER) || 1823490;
+// export const DEFAULT_JOBS_START_BLOCK_NUMBER =
+// 	Number(process.env.DEFAULT_JOBS_START_BLOCK_NUMBER) || 2665716;
+export const DEFAULT_JOBS_START_BLOCK_NUMBER = 2665716;
+
 export const ONE_YEAR = 86400 * 365;
 
 export const ADDRESS_ZERO: Address =
 	"0x0000000000000000000000000000000000000000";
 
 export const USD_PRICE = 1;
-export const WETH_ADDRESS_LINEA_TESTNET =
-	"0xbe2C5113EebFe4C083da31346534CEA1cd2bBC46";
+export const WETH_ADDRESS =
+	process.env.WETH_ADDRESS || "0xbe2C5113EebFe4C083da31346534CEA1cd2bBC46";
+
+export const FLASH_TOKEN_ADDRESS =
+	process.env.FLASH_TOKEN_ADDRESS ||
+	"0x85030dBAAc0739312dC9983363ca57E22A3AA2C1";
+
+export const XFLASH_TOKEN_ADDRESS =
+	process.env.XFLASH_TOKEN_ADDRESS ||
+	"0x9E48B10A010d0AF0217c63aef50589B10C0d1128";
+
 export const CHAINS_TOKENS_LIST = [
 	{
 		chainId: 59140,
@@ -201,7 +213,7 @@ export const CHAINS_TOKENS_LIST = [
 			"https://goerli.lineascan.build/token/0x347b29EFca2f921fFc776Cdc01AF785f043368c6",
 		tokenType: ["bridged"],
 		address: "0x347b29EFca2f921fFc776Cdc01AF785f043368c6",
-		name: "Arthur USD Tether",
+		name: "Flashpad USD Tether",
 		symbol: "USDT",
 		decimals: 6,
 		createdAt: "2023-06-27",
@@ -245,7 +257,7 @@ export const CHAINS_TOKENS_LIST = [
 		chainId: 59140,
 		chainURI: "https://goerli.lineascan.build/block/0",
 		tokenType: ["native"],
-		address: WETH_ADDRESS_LINEA_TESTNET,
+		address: WETH_ADDRESS,
 		name: "Ethereum",
 		symbol: "ETH",
 		decimals: 18,
@@ -281,15 +293,15 @@ export const CHAINS_TOKENS_LIST = [
 		logoURI: "https://cryptologos.cc/logos/shiba-inu-shib-logo.png",
 	},
 	{
-		symbol: "ART",
-		name: "Arthur Token",
-		address: "0xb056CeD9d51eb4A9C366229921CAC57E8A7a17c3",
+		symbol: "FLASH",
+		name: "Flash Token",
+		address: FLASH_TOKEN_ADDRESS,
 		decimals: 18,
 	},
 	{
-		symbol: "xART",
-		name: "XArthur Token",
-		address: "0xF34BAEc8B153E2d14DCC99F0bA9b0bB539Bbe68d",
+		symbol: "xFLASH",
+		name: "xFlash Token",
+		address: XFLASH_TOKEN_ADDRESS,
 		decimals: 18,
 	},
 ];

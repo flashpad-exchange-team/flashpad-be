@@ -2,13 +2,13 @@ import { Entity, Column, Unique, OneToOne, JoinColumn } from "typeorm";
 import { BaseEntity } from "./base.entity";
 import { NftPoolEntity } from "./nftPool.entity";
 
-@Entity("merlin_pools")
+@Entity("thunder_pools")
 @Unique(["address"])
-export class MerlinPoolEntity extends BaseEntity {
+export class ThunderPoolEntity extends BaseEntity {
 	@Column()
 	address: string;
 
-  @OneToOne(() => NftPoolEntity, (nftPool) => nftPool.merlin_pool, {
+	@OneToOne(() => NftPoolEntity, (nftPool) => nftPool.thunderPool, {
 		onDelete: "CASCADE",
 	})
 	@JoinColumn({ name: "nft_pool_id", referencedColumnName: "id" })
@@ -17,6 +17,6 @@ export class MerlinPoolEntity extends BaseEntity {
 	@Column({ name: "nft_pool_id", nullable: true })
 	nft_pool_id: string;
 
-	@Column({ name: "is_early_knight", default: false })
-	is_early_knight: boolean;
+	@Column({ name: "is_lightning_pool", default: false })
+	is_lightning_pool: boolean;
 }

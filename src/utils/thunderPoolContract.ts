@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { abi as MerlinPoolABI } from "../resources/MerlinPool.json";
+import { abi as ThunderPoolABI } from "../resources/ThunderPool.json";
 import { publicClient } from "./web3Clients";
 
 export const read = async (
@@ -10,7 +10,7 @@ export const read = async (
   try {
     const result = await publicClient.readContract({
       address,
-      abi: MerlinPoolABI,
+      abi: ThunderPoolABI,
       functionName,
       args,
     });

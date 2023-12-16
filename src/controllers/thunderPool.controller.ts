@@ -1,20 +1,20 @@
-import { toObject } from "./../utils/misc";
+import { toObject } from "../utils/misc";
 import { Contract, JsonRpcProvider, ZeroAddress, ethers } from "ethers";
 import { Request, Response } from "express";
-import * as merlinPoolRepository from "../repositories/merlinPool.repository";
+import * as thunderPoolRepository from "../repositories/thunderPool.repository";
 import { Address } from "viem";
 import {
 	CHAINS_TOKENS_LIST,
-	MERLIN_POOL_FACTORY_ADDRESS,
+	THUNDER_POOL_FACTORY_ADDRESS,
 	ONE_YEAR,
 	RPC_URL,
 	ADDRESS_ZERO,
 } from "../configs/constants";
-import { abi as ArthurPairABI } from "../resources/ArthurPair.json";
-import { abi as MERLIN_POOL_ABI } from "../resources/MerlinPool.json";
-import * as merlinPoolService from "../services/merlinPool.service";
-import * as merlinPoolContract from "../utils/merlinPoolContract";
-import * as merlinPoolFactoryContract from "../utils/merlinPoolFactoryContract";
+import { abi as FlashpadPairABI } from "../resources/FlashpadPair.json";
+import { abi as THUNDER_POOL_ABI } from "../resources/ThunderPool.json";
+import * as thunderPoolService from "../services/thunderPool.service";
+import * as thunderPoolContract from "../utils/thunderPoolContract";
+import * as thunderPoolFactoryContract from "../utils/thunderPoolFactoryContract";
 import * as nftPoolContract from "../utils/nftPoolContract";
 import * as pairContract from "../utils/pairContract";
 import * as erc20Contract from "../utils/erc20TokenContract";
@@ -24,24 +24,30 @@ export const getInfo = async (req: Request, res: Response) => {
 		const { address } = req.params;
 		if (!ethers.isAddress(address)) {
 			return res.status(400).json({
-				message: "Merlin pool address is not valid!",
+				message: "Thunder pool address is not valid!",
 			});
 		}
 
-		const merlinPool = await merlinPoolService.getMerlinPoolByAddress(address);
-		console.log({ merlinPool });
-		if (!merlinPool) {
+		const thunderPool = await thunderPoolService.getThunderPoolByAddress(
+			address
+		);
+		console.log({ thunderPool });
+		if (!thunderPool) {
 			return res.status(404).json({
-				message: "Merlin pool not existed!",
+				message: "Thunder pool not existed!",
 			});
 		}
 
 		const provider = new JsonRpcProvider(RPC_URL);
-		const merlinPoolContract = new Contract(address, MERLIN_POOL_ABI, provider);
+		const thunderPoolContract = new Contract(
+			address,
+			THUNDER_POOL_ABI,
+			provider
+		);
 
 		const pairContract = new Contract(
-			merlinPool.nft_pool.lp_address,
-			ArthurPairABI,
+			thunderPool.nft_pool.lp_address,
+			FlashpadPairABI,
 			provider
 		);
 
@@ -53,8 +59,8 @@ export const getInfo = async (req: Request, res: Response) => {
 		] = await Promise.all([
 			pairContract.getReserves(),
 			pairContract.totalSupply(),
-			merlinPoolContract.totalDepositAmount(),
-			merlinPoolContract.rewardsToken1PerSecond(),
+			thunderPoolContract.totalDepositAmount(),
+			thunderPoolContract.rewardsToken1PerSecond(),
 		]);
 
 		// !TODO: Call api or do something to calculate price
@@ -64,7 +70,7 @@ export const getInfo = async (req: Request, res: Response) => {
 			reserves0 * reserveToken1Price + reserves1 * reserveToken2Price;
 
 		// 1 parameter
-		const merlinPoolTVP = (totalDepositAmount * lpTVL) / lpTotalSupply;
+		const thunderPoolTVP = (totalDepositAmount * lpTVL) / lpTotalSupply;
 
 		// !TODO: Call api or do something to calculate price
 		const rewardsToken1Price = BigInt(1);
@@ -72,17 +78,17 @@ export const getInfo = async (req: Request, res: Response) => {
 			rewardsToken1PerSecond * rewardsToken1Price * BigInt(ONE_YEAR);
 
 		/**
-		 * APR = (yearly emission / TVL MerlinPool) * 100
+		 * APR = (yearly emission / TVL ThunderPool) * 100
 		 */
 		const apr =
-			merlinPoolTVP === BigInt(0)
+			thunderPoolTVP === BigInt(0)
 				? BigInt(0)
-				: (yearlyEmission * BigInt(100)) / merlinPoolTVP;
+				: (yearlyEmission * BigInt(100)) / thunderPoolTVP;
 
 		const response: any = {
 			message: "ok",
 			data: {
-				merlinPoolTVP: merlinPoolTVP.toString(),
+				thunderPoolTVP: thunderPoolTVP.toString(),
 				apr: apr.toString(),
 				lpTotalSupply: lpTotalSupply.toString(),
 				totalDepositAmount: totalDepositAmount.toString(),
@@ -98,33 +104,33 @@ export const getInfo = async (req: Request, res: Response) => {
 	}
 };
 
-// useAllMerlinPoolsData
-export const getAllMerlinPoolsData = async (req: Request, res: Response) => {
+// useAllThunderPoolsData
+export const getAllThunderPoolsData = async (req: Request, res: Response) => {
 	if (req.query.offChain === "true") {
 		const page = parseInt(req.query.page as string) || 1;
 		const limit = parseInt(req.query.limit as string) || 10;
-		const result = await merlinPoolRepository.getAllMerlinPools(page, limit);
+		const result = await thunderPoolRepository.getAllThunderPools(page, limit);
 		return res.status(200).json(result);
 	}
 	try {
 		const { userAddress = ZeroAddress } = req.query;
-		const listMerlinPools = [];
+		const listThunderPools = [];
 
-		const nPools = await merlinPoolFactoryContract.read(
-			MERLIN_POOL_FACTORY_ADDRESS as Address,
-			"merlinPoolsLength",
+		const nPools = await thunderPoolFactoryContract.read(
+			THUNDER_POOL_FACTORY_ADDRESS as Address,
+			"thunderPoolsLength",
 			[]
 		);
 
 		for (let i = 0; i < nPools; i++) {
-			const merlinPoolAddress = await merlinPoolFactoryContract.read(
-				MERLIN_POOL_FACTORY_ADDRESS as Address,
-				"getMerlinPool",
+			const thunderPoolAddress = await thunderPoolFactoryContract.read(
+				THUNDER_POOL_FACTORY_ADDRESS as Address,
+				"getThunderPool",
 				[i]
 			);
 
-			const isPublished = await merlinPoolContract.read(
-				merlinPoolAddress as Address,
+			const isPublished = await thunderPoolContract.read(
+				thunderPoolAddress as Address,
 				"published",
 				[]
 			);
@@ -141,14 +147,14 @@ export const getAllMerlinPoolsData = async (req: Request, res: Response) => {
 				pendingRewards,
 				nftPoolAddress,
 			] = await Promise.all([
-				merlinPoolContract.read(merlinPoolAddress, "rewardsToken1", []),
-				merlinPoolContract.read(merlinPoolAddress, "rewardsToken2", []),
-				merlinPoolContract.read(merlinPoolAddress, "settings", []),
-				merlinPoolContract.read(merlinPoolAddress, "totalDepositAmount", []),
-				merlinPoolContract.read(merlinPoolAddress, "pendingRewards", [
+				thunderPoolContract.read(thunderPoolAddress, "rewardsToken1", []),
+				thunderPoolContract.read(thunderPoolAddress, "rewardsToken2", []),
+				thunderPoolContract.read(thunderPoolAddress, "settings", []),
+				thunderPoolContract.read(thunderPoolAddress, "totalDepositAmount", []),
+				thunderPoolContract.read(thunderPoolAddress, "pendingRewards", [
 					userAddress,
 				]),
-				merlinPoolContract.read(merlinPoolAddress, "nftPool", []),
+				thunderPoolContract.read(thunderPoolAddress, "nftPool", []),
 			]);
 
 			const [rewardsToken1Symbol, poolInfoObj] = await Promise.all([
@@ -210,7 +216,7 @@ export const getAllMerlinPoolsData = async (req: Request, res: Response) => {
 				return e.symbol === token2Symbol;
 			})?.logoURI;
 
-			listMerlinPools.push({
+			listThunderPools.push({
 				token1: token1Symbol,
 				token2: token2Symbol,
 				token1Logo,
@@ -229,11 +235,11 @@ export const getAllMerlinPoolsData = async (req: Request, res: Response) => {
 				lpTokenAddress: lpToken,
 				lpTokenDecimals: Number(lpTokenDecimals),
 				nftPoolAddress,
-				poolAddress: merlinPoolAddress,
+				poolAddress: thunderPoolAddress,
 			});
 		}
 
-		return res.json(toObject(listMerlinPools));
+		return res.json(toObject(listThunderPools));
 	} catch (err: any) {
 		return res.status(500).json({
 			message: err?.message || "Internal server error",

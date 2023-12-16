@@ -34,8 +34,8 @@ const getStakingPositionResultKeys = [
 
 const getPoolInfoResultKeys = [
   "lpToken",
-  "artToken",
-  "xArtToken",
+  "flashToken",
+  "xFlashToken",
   "lastRewardTime",
   "accRewardsPerShare",
   "lpSupply",

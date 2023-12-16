@@ -1,6 +1,6 @@
 import * as txRepository from "../repositories/tx.repository";
 import { Contract, JsonRpcProvider } from "ethers";
-import { abi as PAIR_ABI } from "../resources/ArthurPair.json";
+import { abi as PAIR_ABI } from "../resources/FlashpadPair.json";
 import { RPC_URL } from "../configs/constants";
 import { TransactionEntity } from "entities/tx.entity";
 import { rGet, rSet } from "../configs/redis";

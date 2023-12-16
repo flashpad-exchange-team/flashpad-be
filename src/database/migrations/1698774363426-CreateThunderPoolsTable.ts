@@ -6,13 +6,13 @@ import {
 	TableUnique,
 } from "typeorm";
 
-export class CreateMerlinPoolsTable1698774363426 implements MigrationInterface {
+export class CreateThunderPoolsTable1698774363426 implements MigrationInterface {
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 
 		await queryRunner.createTable(
 			new Table({
-				name: "merlin_pools",
+				name: "thunder_pools",
 				columns: [
 					{
 						name: "id",
@@ -32,16 +32,16 @@ export class CreateMerlinPoolsTable1698774363426 implements MigrationInterface {
 		);
 
 		await queryRunner.createUniqueConstraint(
-			"merlin_pools",
+			"thunder_pools",
 			new TableUnique({
-				name: "UNIQUE_MERLIN_POOL_ADDRESS",
+				name: "UNIQUE_THUNDER_POOL_ADDRESS",
 				columnNames: ["address"],
 			})
 		);
 
 		// create foreign key to nft_pools
 		await queryRunner.createForeignKey(
-			"merlin_pools",
+			"thunder_pools",
 			new TableForeignKey({
 				columnNames: ["nft_pool_id"],
 				referencedTableName: "nft_pools",
@@ -52,6 +52,6 @@ export class CreateMerlinPoolsTable1698774363426 implements MigrationInterface {
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.dropTable("merlin_pools", true);
+		await queryRunner.dropTable("thunder_pools", true);
 	}
 }

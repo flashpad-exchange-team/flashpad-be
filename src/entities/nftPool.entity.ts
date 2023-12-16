@@ -1,7 +1,7 @@
 import { Entity, Column, Unique, OneToOne, JoinColumn } from "typeorm";
 import { BaseEntity } from "./base.entity";
 import { LpPairEntity } from "./lpPair.entity";
-import { MerlinPoolEntity } from "./merlinPool.entity";
+import { ThunderPoolEntity } from "./thunderPool.entity";
 
 @Entity("nft_pools")
 @Unique(["address"])
@@ -10,7 +10,7 @@ export class NftPoolEntity extends BaseEntity {
 	@Column()
 	address: string;
 
-  @OneToOne(() => LpPairEntity, (pair) => pair.nft_pool, {
+	@OneToOne(() => LpPairEntity, (pair) => pair.nft_pool, {
 		onDelete: "CASCADE",
 	})
 	@JoinColumn({ name: "pair_id", referencedColumnName: "id" })
@@ -19,8 +19,8 @@ export class NftPoolEntity extends BaseEntity {
 	@Column({ name: "pair_id", nullable: true })
 	pair_id: string;
 
-  @OneToOne(() => MerlinPoolEntity, (merlinPool) => merlinPool.nft_pool)
-	merlin_pool: MerlinPoolEntity;
+	@OneToOne(() => ThunderPoolEntity, (thunderPool) => thunderPool.nft_pool)
+	thunderPool: ThunderPoolEntity;
 
 	@Column()
 	lp_address: string;
