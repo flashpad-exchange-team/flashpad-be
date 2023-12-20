@@ -9,8 +9,8 @@ export const DB_HOST = process.env.POSTGRES_DB_HOST || "localhost";
 export const DB_PORT = process.env.POSTGRES_DB_PORT
 	? parseInt(process.env.POSTGRES_DB_PORT)
 	: 5432;
-// export const DB_DATABASE = process.env.POSTGRES_DB_DATABASE || "flashpaddb";
-export const DB_DATABASE = "flashpaddb";
+export const DB_DATABASE = process.env.POSTGRES_DB_DATABASE || "flashpaddb";
+// export const DB_DATABASE = "flashpaddb";
 export const DB_USERNAME = process.env.POSTGRES_DB_USERNAME || "postgres";
 export const DB_PASSWORD = process.env.POSTGRES_DB_PASSWORD || "postgres";
 export const DB_MAX_CONNECTION = process.env.POSTGRES_DB_MAX_CONNECTION_POLL
@@ -52,9 +52,9 @@ export const REDIS_PORT = process.env.REDIS_PORT
 	? parseInt(process.env.REDIS_PORT, 10)
 	: 6379;
 
-// export const DEFAULT_JOBS_START_BLOCK_NUMBER =
-// 	Number(process.env.DEFAULT_JOBS_START_BLOCK_NUMBER) || 2665716;
-export const DEFAULT_JOBS_START_BLOCK_NUMBER = 2665716;
+export const DEFAULT_JOBS_START_BLOCK_NUMBER =
+	Number(process.env.DEFAULT_JOBS_START_BLOCK_NUMBER) || 2665716;
+// export const DEFAULT_JOBS_START_BLOCK_NUMBER = 2665716;
 
 export const ONE_YEAR = 86400 * 365;
 
