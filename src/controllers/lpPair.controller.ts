@@ -11,7 +11,6 @@ import {
 	USD_PRICE,
 } from "../configs/constants";
 import { toObject } from "../utils/misc";
-import { zeroAddress } from "viem";
 
 export const getLpPairs = async (req: Request, res: Response) => {
 	try {
@@ -36,7 +35,7 @@ export const getLpPairs = async (req: Request, res: Response) => {
 
 		return res.status(200).json(response);
 	} catch (err: any) {
-		console.error(`getAllLpPairs error: ${err?.message || err}`);
+		console.error(`getLpPairs error: ${err?.message || err}`);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
@@ -340,7 +339,7 @@ export const getInfoOfAllPool = async (req: Request, res: Response) => {
 			totalTVL: totalTVL.toString(),
 		});
 	} catch (err: any) {
-		console.error(`getAllLpPairs error: ${err?.message || err}`);
+		console.error(`getInfoOfAllPool error: ${err?.message || err}`);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
