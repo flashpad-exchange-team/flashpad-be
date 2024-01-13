@@ -35,7 +35,7 @@ export const getLpPairs = async (req: Request, res: Response) => {
 
 		return res.status(200).json(response);
 	} catch (err: any) {
-		console.error(`getLpPairs error: ${err?.message || err}`);
+		console.error(`getLpPairs error: ${err}`);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
@@ -53,7 +53,7 @@ const getOneLpPair = async (res: Response, address: string) => {
 
 		return res.status(200).json(response);
 	} catch (err: any) {
-		console.error(`getOneLpPair error: ${err?.message || err}`);
+		console.error(`getOneLpPair error: ${err}`);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
@@ -166,7 +166,7 @@ export const getAllPairsDataForAllPool = async (
 		}
 		return res.status(200).json(listPairs);
 	} catch (err: any) {
-		console.error(`getAllPairsDataForAllPool error: ${err?.message || err}`);
+		console.error(`getAllPairsDataForAllPool error: ${err}`);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
@@ -272,7 +272,7 @@ export const getAllPairsDataForPosition = async (
 
 		return res.status(200).json(toObject(listPairs));
 	} catch (err: any) {
-		console.error(`getAllPairsDataForPosition error: ${err?.message || err}`);
+		console.error(`getAllPairsDataForPosition error: ${err}`);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
@@ -329,7 +329,7 @@ export const getInfoOfAllPool = async (req: Request, res: Response) => {
 			totalTVL: totalTVL.toString(),
 		});
 	} catch (err: any) {
-		console.error(`getInfoOfAllPool error: ${err?.message || err}`);
+		console.error(`getInfoOfAllPool error: ${err}`);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
