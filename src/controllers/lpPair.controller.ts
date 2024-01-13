@@ -66,11 +66,6 @@ export const getAllPairsDataForAllPool = async (
 	res: Response
 ) => {
 	try {
-		const address = req.query.address as string;
-		if (!!address) {
-			return getOneLpPair(res, address);
-		}
-
 		const userAddress = req.query.userAddress as string;
 		const page = parseInt(req.query.page as string) || 1;
 		const limit = parseInt(req.query.limit as string) || 10;
@@ -184,11 +179,6 @@ export const getAllPairsDataForPosition = async (
 	res: Response
 ) => {
 	try {
-		const address = req.query.address as string;
-		if (!!address) {
-			return getOneLpPair(res, address);
-		}
-
 		const page = parseInt(req.query.page as string) || 1;
 		const limit = parseInt(req.query.limit as string) || 10;
 
