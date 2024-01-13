@@ -18,12 +18,9 @@ export const getNftPoolData = async (req: Request, res: Response) => {
     const tokenDataMap: Map<string, any> = new Map();
     for (const token of CHAINS_TOKENS_LIST) {
       tokenDataMap.set(token.address, {
-        symbol:
-          token.symbol == "WFTM" || token.symbol == "WETH"
-            ? "ETH"
-            : token.symbol,
+        symbol: token.symbol,
         logoURI: token.logoURI,
-        decimals: token.decimals || 8,
+        decimals: token.decimals || 18,
       });
     }
     const listPools: any[] = [];
@@ -54,11 +51,11 @@ export const getNftPoolData = async (req: Request, res: Response) => {
       if (reserves) {
         const token1Reserve = formatUnits(
           reserves[0],
-          token1Data?.decimals || 8
+          token1Data?.decimals || 18
         );
         const token2Reserve = formatUnits(
           reserves[1],
-          token2Data?.decimals || 8
+          token2Data?.decimals || 18
         );
 
         TVL = new BigNumber(token1Reserve)

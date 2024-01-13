@@ -35,7 +35,7 @@ export const getLpPairs = async (req: Request, res: Response) => {
 
 		return res.status(200).json(response);
 	} catch (err: any) {
-		console.error(`getLpPairs error: ${err}`);
+		console.error('getLpPairs error: ', err);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
@@ -53,7 +53,7 @@ const getOneLpPair = async (res: Response, address: string) => {
 
 		return res.status(200).json(response);
 	} catch (err: any) {
-		console.error(`getOneLpPair error: ${err}`);
+		console.error('getOneLpPair error:', err);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
@@ -96,12 +96,9 @@ export const getAllPairsDataForAllPool = async (
 		const tokenDataMap: Map<string, any> = new Map();
 		for (const token of CHAINS_TOKENS_LIST) {
 			tokenDataMap.set(token.address, {
-				symbol:
-					token.symbol == "WFTM" || token.symbol == "WETH"
-						? "ETH"
-						: token.symbol,
+				symbol: token.symbol,
 				logoURI: token.logoURI,
-				decimals: token.decimals || 8,
+				decimals: token.decimals || 18,
 			});
 		}
 
@@ -111,6 +108,10 @@ export const getAllPairsDataForAllPool = async (
 			const pairAddress: string = pairData.address;
 			const token1Data: any = tokenDataMap.get(pairData.token1_address);
 			const token2Data: any = tokenDataMap.get(pairData.token2_address);
+			if (!token1Data || !token2Data) {
+				console.log('pairData not found:', pairData);
+				continue;
+			}
 
 			const userBalance: any = userLpBalances[i];
 			const totalSupply: any = totalSupplies[i];
@@ -166,7 +167,7 @@ export const getAllPairsDataForAllPool = async (
 		}
 		return res.status(200).json(listPairs);
 	} catch (err: any) {
-		console.error(`getAllPairsDataForAllPool error: ${err}`);
+		console.error('getAllPairsDataForAllPool error:', err);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
@@ -220,20 +221,16 @@ export const getAllPairsDataForPosition = async (
 				);
 
 				const token1Symbol =
-					token1?.symbol === "WFTM" || token1?.symbol === "WETH"
-						? "ETH"
-						: token1?.symbol || "UNKNOWN";
+					token1?.symbol || "UNKNOWN";
 
 				const token2Symbol =
-					token2?.symbol === "WFTM" || token2?.symbol === "WETH"
-						? "ETH"
-						: token2?.symbol || "UNKNOWN";
+					token2?.symbol || "UNKNOWN";
 
 				const token1Logo = token1?.logoURI;
 				const token2Logo = token2?.logoURI;
 
-				const token1Reserve = formatUnits(reserves0, token1?.decimals || 8);
-				const token2Reserve = formatUnits(reserves1, token2?.decimals || 8);
+				const token1Reserve = formatUnits(reserves0, token1?.decimals || 18);
+				const token2Reserve = formatUnits(reserves1, token2?.decimals || 18);
 
 				const TVL = new BigNumber(token1Reserve)
 					.times(USD_PRICE)
@@ -272,7 +269,7 @@ export const getAllPairsDataForPosition = async (
 
 		return res.status(200).json(toObject(listPairs));
 	} catch (err: any) {
-		console.error(`getAllPairsDataForPosition error: ${err}`);
+		console.error('getAllPairsDataForPosition error:', err);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
@@ -298,12 +295,9 @@ export const getInfoOfAllPool = async (req: Request, res: Response) => {
 		const tokenDataMap: Map<string, any> = new Map();
 		for (const token of CHAINS_TOKENS_LIST) {
 			tokenDataMap.set(token.address, {
-				symbol:
-					token.symbol == "WFTM" || token.symbol == "WETH"
-						? "ETH"
-						: token.symbol,
+				symbol: token.symbol,
 				logoURI: token.logoURI,
-				decimals: token.decimals || 8,
+				decimals: token.decimals || 18,
 			});
 		}
 
@@ -329,7 +323,7 @@ export const getInfoOfAllPool = async (req: Request, res: Response) => {
 			totalTVL: totalTVL.toString(),
 		});
 	} catch (err: any) {
-		console.error(`getInfoOfAllPool error: ${err}`);
+		console.error('getInfoOfAllPool error:', err);
 		return res.status(500).json({
 			message: err?.message || "Internal server error",
 		});
