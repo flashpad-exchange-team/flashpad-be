@@ -10,9 +10,11 @@ export abstract class BaseEntity {
 	@PrimaryGeneratedColumn()
 	id: string;
 
+	@Exclude()
 	@CreateDateColumn({ type: "timestamp" })
 	created_at: Date;
 
+	@Exclude()
 	@UpdateDateColumn({ type: "timestamp" })
 	updated_at: Date;
 

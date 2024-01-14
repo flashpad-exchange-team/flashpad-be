@@ -35,6 +35,7 @@ app.use("/lp-pairs", routes.lpPairRoute);
 app.use("/total-volume", routes.totalVolumeRoute);
 app.use("/thunder-pools", routes.thunderPoolRoute);
 app.use("/nft-pools", routes.nftPoolRoute);
+app.use("/erc20", routes.erc20TokenRoute);
 
 // Start the express server and listen on the specified port
 app.listen(SERVER_PORT, () =>

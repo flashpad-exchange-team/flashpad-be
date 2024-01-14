@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as lpPairService from "../services/lpPair.service";
+import * as erc20TokenRepository from "../repositories/erc20Token.repository";
 import * as pairContract from "../utils/pairContract";
 import * as flashpadMasterContract from "../utils/flashpadMasterContract";
 import * as web3Helpers from "../utils/web3Helpers";
@@ -7,7 +8,6 @@ import BigNumber from "bignumber.js";
 import { formatUnits } from "ethers";
 import {
 	FLASHPAD_MASTER_ADDRESS,
-	CHAINS_TOKENS_LIST,
 	USD_PRICE,
 } from "../configs/constants";
 import { toObject } from "../utils/misc";
@@ -93,11 +93,13 @@ export const getAllPairsDataForAllPool = async (
 			) as any,
 		]);
 
+		const { data: CHAINS_TOKENS_LIST } = await erc20TokenRepository.getAllERC20Tokens();
+
 		const tokenDataMap: Map<string, any> = new Map();
 		for (const token of CHAINS_TOKENS_LIST) {
 			tokenDataMap.set(token.address, {
 				symbol: token.symbol,
-				logoURI: token.logoURI,
+				logoURI: token.logo_uri,
 				decimals: token.decimals || 18,
 			});
 		}
@@ -109,7 +111,7 @@ export const getAllPairsDataForAllPool = async (
 			const token1Data: any = tokenDataMap.get(pairData.token1_address);
 			const token2Data: any = tokenDataMap.get(pairData.token2_address);
 			if (!token1Data || !token2Data) {
-				console.log('pairData not found:', pairData);
+				console.log('At least one of the 2 tokens data cannot be found:', pairData);
 				continue;
 			}
 
@@ -213,6 +215,8 @@ export const getAllPairsDataForPosition = async (
 					pairContract.read(pairAddress, "getReserves", []),
 				]);
 
+				const { data: CHAINS_TOKENS_LIST } = await erc20TokenRepository.getAllERC20Tokens();
+
 				const token1 = CHAINS_TOKENS_LIST.find(
 					(e) => e.address === token1_address
 				);
@@ -226,8 +230,8 @@ export const getAllPairsDataForPosition = async (
 				const token2Symbol =
 					token2?.symbol || "UNKNOWN";
 
-				const token1Logo = token1?.logoURI;
-				const token2Logo = token2?.logoURI;
+				const token1Logo = token1?.logo_uri;
+				const token2Logo = token2?.logo_uri;
 
 				const token1Reserve = formatUnits(reserves0, token1?.decimals || 18);
 				const token2Reserve = formatUnits(reserves1, token2?.decimals || 18);
@@ -292,11 +296,13 @@ export const getInfoOfAllPool = async (req: Request, res: Response) => {
 			) as any,
 		]);
 
+		const { data: CHAINS_TOKENS_LIST } = await erc20TokenRepository.getAllERC20Tokens();
+
 		const tokenDataMap: Map<string, any> = new Map();
 		for (const token of CHAINS_TOKENS_LIST) {
 			tokenDataMap.set(token.address, {
 				symbol: token.symbol,
-				logoURI: token.logoURI,
+				logoURI: token.logo_uri,
 				decimals: token.decimals || 18,
 			});
 		}
@@ -306,6 +312,10 @@ export const getInfoOfAllPool = async (req: Request, res: Response) => {
 			const pairData: any = allPairsData[i];
 			const token1Data: any = tokenDataMap.get(pairData.token1_address);
 			const token2Data: any = tokenDataMap.get(pairData.token2_address);
+			if (!token1Data || !token2Data) {
+				console.log('At least one of the 2 tokens data cannot be found:', pairData);
+				continue;
+			}
 
 			const [reserve1, reserve2]: any = (reserves as any)[i];
 

@@ -2,9 +2,9 @@ import { toObject } from "../utils/misc";
 import { Contract, JsonRpcProvider, ZeroAddress, ethers } from "ethers";
 import { Request, Response } from "express";
 import * as thunderPoolRepository from "../repositories/thunderPool.repository";
+import * as erc20TokenRepository from "../repositories/erc20Token.repository";
 import { Address } from "viem";
 import {
-	CHAINS_TOKENS_LIST,
 	THUNDER_POOL_FACTORY_ADDRESS,
 	ONE_YEAR,
 	RPC_URL,
@@ -175,13 +175,15 @@ export const getAllThunderPoolsData = async (req: Request, res: Response) => {
 				);
 			}
 
+			const { data: CHAINS_TOKENS_LIST } = await erc20TokenRepository.getAllERC20Tokens();
+
 			const rewardsToken1Logo = CHAINS_TOKENS_LIST.find((e) => {
 				return e.symbol == rewardsToken1Symbol;
-			})?.logoURI;
+			})?.logo_uri;
 
 			const rewardsToken2Logo = CHAINS_TOKENS_LIST.find((e) => {
 				return e.symbol == rewardsToken2Symbol;
-			})?.logoURI;
+			})?.logo_uri;
 
 			const lpToken = poolInfoObj?.lpToken;
 
@@ -210,11 +212,11 @@ export const getAllThunderPoolsData = async (req: Request, res: Response) => {
 
 			const token1Logo = CHAINS_TOKENS_LIST.find((e) => {
 				return e.symbol === token1Symbol;
-			})?.logoURI;
+			})?.logo_uri;
 
 			const token2Logo = CHAINS_TOKENS_LIST.find((e) => {
 				return e.symbol === token2Symbol;
-			})?.logoURI;
+			})?.logo_uri;
 
 			listThunderPools.push({
 				token1: token1Symbol,
