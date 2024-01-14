@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import * as lpPairService from "../services/lpPair.service";
 import * as nftPoolContract from "../utils/nftPoolContract";
+import * as erc20TokenRepository from "../repositories/erc20Token.repository";
 import * as pairContract from "../utils/pairContract";
 import { formatUnits } from "ethers";
-import { CHAINS_TOKENS_LIST, RPC_URL, USD_PRICE } from "../configs/constants";
+import { RPC_URL, USD_PRICE } from "../configs/constants";
 import BigNumber from "bignumber.js";
 
 // useAllNftPoolsData
@@ -15,11 +16,13 @@ export const getNftPoolData = async (req: Request, res: Response) => {
     const result = await lpPairService.getAllPairs(page, limit);
 
     const { total, data: allPairsData } = result;
+
+    const { data: CHAINS_TOKENS_LIST } = await erc20TokenRepository.getAllERC20Tokens();
     const tokenDataMap: Map<string, any> = new Map();
     for (const token of CHAINS_TOKENS_LIST) {
       tokenDataMap.set(token.address, {
         symbol: token.symbol,
-        logoURI: token.logoURI,
+        logoURI: token.logo_uri,
         decimals: token.decimals || 18,
       });
     }
