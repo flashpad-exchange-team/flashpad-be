@@ -5,7 +5,7 @@ import { instanceToPlain } from "class-transformer";
 export const getERC20Tokens = async (req: Request, res: Response) => {
 	try {
 		const page = parseInt(req.query.page as string) || 1;
-		const limit = parseInt(req.query.limit as string) || 50;
+		const limit = parseInt(req.query.limit as string) || 1000;
 
 		const result = await erc20TokenRepository.getAllERC20Tokens(page, limit);
 
