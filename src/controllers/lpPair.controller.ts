@@ -108,8 +108,8 @@ export const getAllPairsDataForAllPool = async (
 		for (let i = 0; i < allPairsData.length; i++) {
 			const pairData: any = allPairsData[i];
 			const pairAddress: string = pairData.address;
-			const token1Data: any = tokenDataMap.get(pairData.token1_address);
-			const token2Data: any = tokenDataMap.get(pairData.token2_address);
+			const token1Data: any = tokenDataMap.get(pairData.token1_address.toLowerCase());
+			const token2Data: any = tokenDataMap.get(pairData.token2_address.toLowerCase());
 			if (!token1Data || !token2Data) {
 				console.log('At least one of the 2 tokens data cannot be found:', pairData);
 				continue;
@@ -153,8 +153,8 @@ export const getAllPairsDataForAllPool = async (
 			listPairs.push({
 				token1: token1Data.symbol,
 				token2: token2Data.symbol,
-				token1Address: pairData.token1_address,
-				token2Address: pairData.token2_address,
+				token1Address: pairData.token1_address.toLowerCase(),
+				token2Address: pairData.token2_address.toLowerCase(),
 				token1Logo: token1Data.logoURI,
 				token2Logo: token2Data.logoURI,
 				myPoolShare: poolShare,
@@ -218,10 +218,10 @@ export const getAllPairsDataForPosition = async (
 				const { data: CHAINS_TOKENS_LIST } = await erc20TokenRepository.getAllERC20Tokens();
 
 				const token1 = CHAINS_TOKENS_LIST.find(
-					(e) => e.address === token1_address
+					(e) => e.address.toLowerCase() === token1_address.toLowerCase()
 				);
 				const token2 = CHAINS_TOKENS_LIST.find(
-					(e) => e.address === token2_address
+					(e) => e.address.toLowerCase() === token2_address.toLowerCase()
 				);
 
 				const token1Symbol =
@@ -253,8 +253,8 @@ export const getAllPairsDataForPosition = async (
 					locked,
 					token1: token1Symbol,
 					token2: token2Symbol,
-					token1Address: token1_address,
-					token2Address: token2_address,
+					token1Address: token1_address.toLowerCase(),
+					token2Address: token2_address.toLowerCase(),
 					lpTokenDecimals: Number(lpTokenDecimals),
 					token1Logo,
 					token2Logo,
@@ -310,8 +310,8 @@ export const getInfoOfAllPool = async (req: Request, res: Response) => {
 		let totalTVL = new BigNumber(0);
 		for (let i = 0; i < allPairsData.length; i++) {
 			const pairData: any = allPairsData[i];
-			const token1Data: any = tokenDataMap.get(pairData.token1_address);
-			const token2Data: any = tokenDataMap.get(pairData.token2_address);
+			const token1Data: any = tokenDataMap.get(pairData.token1_address.toLowerCase());
+			const token2Data: any = tokenDataMap.get(pairData.token2_address.toLowerCase());
 			if (!token1Data || !token2Data) {
 				console.log('At least one of the 2 tokens data cannot be found:', pairData);
 				continue;
