@@ -21,7 +21,7 @@ export const addERC20Token = async (
   logoURI: string,
 ) => {
 	const erc20TokenObj: Partial<Erc20TokenEntity> = {
-    address,
+    address: address.toLowerCase(),
 		name,
     symbol,
     decimals,
